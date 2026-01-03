@@ -1,0 +1,2 @@
+web: npm run db:migrate && npm run start:prod
+worker: npm run worker
