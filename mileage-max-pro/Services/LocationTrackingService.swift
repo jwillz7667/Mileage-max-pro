@@ -116,11 +116,19 @@ final class LocationTrackingService: NSObject, ObservableObject {
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
         locationManager.distanceFilter = minDistanceFilter
-        locationManager.allowsBackgroundLocationUpdates = true
         locationManager.pausesLocationUpdatesAutomatically = false
         locationManager.activityType = .automotiveNavigation
 
         authorizationStatus = locationManager.authorizationStatus
+        updateBackgroundLocationMode()
+    }
+
+    private func updateBackgroundLocationMode() {
+        // Only enable background location updates when user has granted "Always" permission
+        // Setting this without proper authorization or background mode capability will crash
+        if authorizationStatus == .authorizedAlways {
+            locationManager.allowsBackgroundLocationUpdates = true
+        }
     }
 
     // MARK: - Authorization
@@ -483,7 +491,12 @@ extension LocationTrackingService: CLLocationManagerDelegate {
             authorizationStatus = manager.authorizationStatus
 
             switch authorizationStatus {
-            case .authorizedAlways, .authorizedWhenInUse:
+            case .authorizedAlways:
+                updateBackgroundLocationMode()
+                if trackingState == .error("Location permission required") {
+                    trackingState = .idle
+                }
+            case .authorizedWhenInUse:
                 if trackingState == .error("Location permission required") {
                     trackingState = .idle
                 }
