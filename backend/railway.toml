@@ -3,7 +3,7 @@ builder = "nixpacks"
 buildCommand = "npm ci && npm run db:generate && npm run build"
 
 [deploy]
-startCommand = "DATABASE_URL=$DATABASE_PUBLIC_URL npm run db:migrate && npm run start:prod"
+startCommand = "sh -c 'DATABASE_URL=$DATABASE_PUBLIC_URL npm run db:migrate && npm run start:prod'"
 healthcheckPath = "/health"
 healthcheckTimeout = 60
 restartPolicyType = "on_failure"
