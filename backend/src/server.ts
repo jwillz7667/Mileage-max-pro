@@ -141,10 +141,7 @@ process.on('SIGINT', shutdown);
 // Start server
 async function start(): Promise<void> {
   try {
-    // Connect to database and Redis
-    await connectDatabase();
-    await connectRedis();
-
+    // Start HTTP server first (so healthcheck passes during DB connection)
     const server = app.listen(config.server.port, () => {
       logger.info({
         env: config.server.env,
@@ -160,6 +157,12 @@ async function start(): Promise<void> {
       }
       throw error;
     });
+
+    // Connect to database and Redis after server is listening
+    await connectDatabase();
+    await connectRedis();
+
+    logger.info('All connections established successfully');
   } catch (error) {
     logger.error({ error }, 'Failed to start server');
     process.exit(1);
