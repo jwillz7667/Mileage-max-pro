@@ -43,9 +43,9 @@ USER nodejs
 # Expose port
 EXPOSE 3000
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1
+# Health check - Railway sets PORT dynamically
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:${PORT:-3000}/health || exit 1
 
-# Start command
-CMD ["npm", "run", "start:prod"]
+# Start command - run migrations then start server
+CMD ["sh", "-c", "npm run db:migrate && npm run start:prod"]
