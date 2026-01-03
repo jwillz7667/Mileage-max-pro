@@ -41,15 +41,17 @@ struct MileageMaxProApp: App {
             UserSettings.self
         ])
 
+        // Disable CloudKit for now - requires proper entitlements setup
         let modelConfiguration = ModelConfiguration(
             schema: schema,
-            isStoredInMemoryOnly: false,
-            cloudKitDatabase: .private("iCloud.com.mileagemaxpro")
+            isStoredInMemoryOnly: false
         )
 
         do {
             return try ModelContainer(for: schema, configurations: [modelConfiguration])
         } catch {
+            // Log the actual error for debugging
+            print("ModelContainer Error: \(error)")
             fatalError("Could not create ModelContainer: \(error)")
         }
     }()

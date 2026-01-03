@@ -49,11 +49,13 @@ final class SavedLocation {
 
     var user: User?
 
-    @Relationship(deleteRule: .nullify, inverse: \DeliveryRoute.startLocation)
-    var routeStarts: [DeliveryRoute]
+    // Note: These are simple back-references, not managed relationships
+    // to avoid SwiftData inverse relationship conflicts
+    @Transient
+    var routeStarts: [DeliveryRoute] = []
 
-    @Relationship(deleteRule: .nullify, inverse: \DeliveryRoute.endLocation)
-    var routeEnds: [DeliveryRoute]
+    @Transient
+    var routeEnds: [DeliveryRoute] = []
 
     // MARK: - Computed Properties
 
@@ -121,8 +123,6 @@ final class SavedLocation {
         self.createdAt = Date()
         self.updatedAt = Date()
         self.user = nil
-        self.routeStarts = []
-        self.routeEnds = []
     }
 
     // MARK: - Methods
