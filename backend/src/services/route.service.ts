@@ -81,7 +81,7 @@ export async function createRoute(
     },
   });
 
-  routeLogger.info('Route created', { routeId: route.id, userId, stopCount: input.stops.length });
+  routeLogger.info({ routeId: route.id, userId, stopCount: input.stops.length }, 'Route created');
 
   return route;
 }
@@ -137,7 +137,7 @@ export async function updateRoute(
     data: updateData,
   });
 
-  routeLogger.info('Route updated', { routeId, userId });
+  routeLogger.info({ routeId, userId }, 'Route updated');
 
   return updated;
 }
@@ -155,14 +155,17 @@ export async function deleteRoute(userId: string, routeId: string): Promise<void
     where: { id: routeId },
   });
 
-  routeLogger.info('Route deleted', { routeId, userId });
+  routeLogger.info({ routeId, userId }, 'Route deleted');
 }
 
 export async function listRoutes(
   userId: string,
   filters: RouteFilterInput
 ): Promise<PaginatedResponse<DeliveryRoute>> {
-  const { page, perPage, status, startDate, endDate, sort } = filters;
+  const { status, startDate, endDate } = filters;
+  const page = filters.page ?? 1;
+  const perPage = filters.perPage ?? 20;
+  const sort = filters.sort ?? '-createdAt';
   const offset = (page - 1) * perPage;
 
   const where: Prisma.DeliveryRouteWhereInput = { userId };
@@ -333,12 +336,12 @@ export async function optimizeRoute(userId: string, routeId: string): Promise<Ro
     },
   });
 
-  routeLogger.info('Route optimized', {
+  routeLogger.info({
     routeId,
     userId,
     totalDistanceKm: totalDistance / 1000,
     totalDurationMin: totalDuration / 60,
-  });
+  }, 'Route optimized');
 
   return optimizedRoute;
 }
@@ -364,7 +367,7 @@ export async function startRoute(userId: string, routeId: string): Promise<Deliv
     },
   });
 
-  routeLogger.info('Route started', { routeId, userId });
+  routeLogger.info({ routeId, userId }, 'Route started');
 
   return updated;
 }
@@ -428,7 +431,7 @@ export async function updateStop(
     data: updateData,
   });
 
-  routeLogger.info('Stop updated', { routeId, stopId, status: input.status });
+  routeLogger.info({ routeId, stopId, status: input.status }, 'Stop updated');
 
   return updated;
 }
@@ -459,7 +462,7 @@ export async function completeRoute(userId: string, routeId: string): Promise<De
     },
   });
 
-  routeLogger.info('Route completed', { routeId, userId, durationMinutes: actualDuration ? actualDuration / 60 : null });
+  routeLogger.info({ routeId, userId, durationMinutes: actualDuration ? actualDuration / 60 : null }, 'Route completed');
 
   return updated;
 }

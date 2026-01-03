@@ -53,7 +53,7 @@ export async function createExpense(
     },
   });
 
-  expenseLogger.info('Expense created', { expenseId: expense.id, userId, category: input.category });
+  expenseLogger.info({ expenseId: expense.id, userId, category: input.category }, 'Expense created');
 
   return expense;
 }
@@ -120,7 +120,7 @@ export async function updateExpense(
   if (input.description !== undefined) updateData.description = input.description;
   if (input.paymentMethod !== undefined) updateData.paymentMethod = input.paymentMethod;
   if (input.isReimbursable !== undefined) updateData.isReimbursable = input.isReimbursable;
-  if (input.reimbursementStatus !== undefined) updateData.reimbursementStatus = input.reimbursementStatus;
+  if (input.reimbursementStatus !== undefined) updateData.reimbursementStatus = input.reimbursementStatus as any;
   if (input.receiptUrl !== undefined) updateData.receiptUrl = input.receiptUrl;
   if (input.isTaxDeductible !== undefined) updateData.isTaxDeductible = input.isTaxDeductible;
   if (input.taxCategory !== undefined) updateData.taxCategory = input.taxCategory;
@@ -131,7 +131,7 @@ export async function updateExpense(
     data: updateData,
   });
 
-  expenseLogger.info('Expense updated', { expenseId, userId });
+  expenseLogger.info({ expenseId, userId }, 'Expense updated');
 
   return updated;
 }
@@ -150,14 +150,17 @@ export async function deleteExpense(userId: string, expenseId: string): Promise<
     data: { deletedAt: new Date() },
   });
 
-  expenseLogger.info('Expense deleted', { expenseId, userId });
+  expenseLogger.info({ expenseId, userId }, 'Expense deleted');
 }
 
 export async function listExpenses(
   userId: string,
   filters: ExpenseFilterInput
 ): Promise<PaginatedResponse<Expense>> {
-  const { page, perPage, category, vehicleId, tripId, startDate, endDate, minAmount, maxAmount, isReimbursable, isTaxDeductible, sort } = filters;
+  const { category, vehicleId, tripId, startDate, endDate, minAmount, maxAmount, isReimbursable, isTaxDeductible } = filters;
+  const page = filters.page ?? 1;
+  const perPage = filters.perPage ?? 20;
+  const sort = filters.sort ?? '-expenseDate';
   const offset = (page - 1) * perPage;
 
   const where: Prisma.ExpenseWhereInput = {
@@ -282,7 +285,7 @@ export async function createFuelPurchase(
     const fuelPurchase = await tx.fuelPurchase.create({
       data: {
         expenseId: expense.id,
-        vehicleId: input.vehicleId,
+        vehicleId: input.vehicleId!,
         fuelType: input.fuelType as any,
         gallons: input.gallons,
         pricePerGallon: input.pricePerGallon,
@@ -312,12 +315,12 @@ export async function createFuelPurchase(
     return { expense, fuelPurchase };
   });
 
-  expenseLogger.info('Fuel purchase created', {
+  expenseLogger.info({
     expenseId: result.expense.id,
     vehicleId: input.vehicleId,
     gallons: input.gallons,
     mpg: mpgCalculated,
-  });
+  }, 'Fuel purchase created');
 
   return result;
 }

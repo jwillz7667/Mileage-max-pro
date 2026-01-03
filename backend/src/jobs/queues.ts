@@ -62,7 +62,7 @@ export async function addTripProcessingJob(data: TripProcessingJob): Promise<Job
     priority: 1,
     jobId: `trip-${data.tripId}`,
   });
-  jobLogger.debug('Trip processing job added', { jobId: job.id, tripId: data.tripId });
+  jobLogger.debug({ jobId: job.id, tripId: data.tripId }, 'Trip processing job added');
   return job;
 }
 
@@ -71,7 +71,7 @@ export async function addReportGenerationJob(data: ReportGenerationJob): Promise
     priority: 2,
     jobId: `report-${data.reportId}`,
   });
-  jobLogger.debug('Report generation job added', { jobId: job.id, reportId: data.reportId });
+  jobLogger.debug({ jobId: job.id, reportId: data.reportId }, 'Report generation job added');
   return job;
 }
 
@@ -80,7 +80,7 @@ export async function addRouteOptimizationJob(data: RouteOptimizationJob): Promi
     priority: 1,
     jobId: `route-${data.routeId}`,
   });
-  jobLogger.debug('Route optimization job added', { jobId: job.id, routeId: data.routeId });
+  jobLogger.debug({ jobId: job.id, routeId: data.routeId }, 'Route optimization job added');
   return job;
 }
 
@@ -88,7 +88,7 @@ export async function addNotificationJob(data: NotificationJob): Promise<Job<Not
   const job = await notificationQueue.add('send', data, {
     priority: 3,
   });
-  jobLogger.debug('Notification job added', { jobId: job.id, type: data.type });
+  jobLogger.debug({ jobId: job.id, type: data.type }, 'Notification job added');
   return job;
 }
 
@@ -97,7 +97,7 @@ export async function addSyncJob(data: SyncJob): Promise<Job<SyncJob>> {
     priority: 4,
     jobId: `sync-${data.userId}-${data.deviceId}`,
   });
-  jobLogger.debug('Sync job added', { jobId: job.id, userId: data.userId });
+  jobLogger.debug({ jobId: job.id, userId: data.userId }, 'Sync job added');
   return job;
 }
 

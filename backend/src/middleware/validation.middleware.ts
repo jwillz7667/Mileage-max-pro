@@ -10,7 +10,7 @@ export function validate<T>(schema: ZodSchema<T>, target: ValidationTarget = 'bo
       const parsed = schema.parse(data);
 
       // Replace original data with parsed (and potentially transformed) data
-      (req as Record<string, unknown>)[target] = parsed;
+      (req as unknown as Record<string, unknown>)[target] = parsed;
 
       next();
     } catch (error) {

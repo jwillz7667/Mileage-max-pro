@@ -95,7 +95,7 @@ async function createSession(
     data: { refreshTokenHash: hashToken(finalRefreshToken) },
   });
 
-  authLogger.info('Session created', { userId, sessionId: session.id, deviceId: deviceInfo.deviceId });
+  authLogger.info({ userId, sessionId: session.id, deviceId: deviceInfo.deviceId }, 'Session created');
 
   return { session, refreshToken: finalRefreshToken };
 }
@@ -145,10 +145,10 @@ async function findOrCreateUser(
       },
     });
 
-    authLogger.info('Auth provider linked to existing user', {
+    authLogger.info({
       userId: existingUser.id,
       provider,
-    });
+    }, 'Auth provider linked to existing user');
 
     return { user: existingUser, isNewUser: false };
   }
@@ -174,7 +174,7 @@ async function findOrCreateUser(
     },
   });
 
-  authLogger.info('New user created', { userId: newUser.id, provider, email });
+  authLogger.info({ userId: newUser.id, provider, email }, 'New user created');
 
   return { user: newUser, isNewUser: true };
 }
@@ -223,8 +223,8 @@ export async function authenticateWithApple(request: AppleAuthRequest): Promise<
         },
       },
       data: {
-        accessTokenEncrypted: encryptedAccessToken,
-        refreshTokenEncrypted: encryptedRefreshToken,
+        accessTokenEncrypted: encryptedAccessToken as Uint8Array<ArrayBuffer>,
+        refreshTokenEncrypted: encryptedRefreshToken as Uint8Array<ArrayBuffer>,
         tokenExpiresAt: new Date(Date.now() + appleTokens.expiresIn * 1000),
       },
     });
@@ -337,10 +337,10 @@ export async function refreshAccessToken(
 
   // Validate device ID matches
   if (tokenPayload.did !== deviceId) {
-    authLogger.warn('Device ID mismatch in token refresh', {
+    authLogger.warn({
       expectedDeviceId: tokenPayload.did,
       providedDeviceId: deviceId,
-    });
+    }, 'Device ID mismatch in token refresh');
     throw new UnauthorizedError('Device ID mismatch');
   }
 
@@ -372,11 +372,11 @@ export async function refreshAccessToken(
   const providedTokenHash = hashToken(refreshToken);
   if (session.refreshTokenHash !== providedTokenHash) {
     // Potential token theft - revoke entire token family
-    authLogger.warn('Potential token reuse detected, revoking token family', {
+    authLogger.warn({
       sessionId: session.id,
       userId: session.userId,
       familyId: session.refreshTokenFamily,
-    });
+    }, 'Potential token reuse detected, revoking token family');
 
     await prisma.session.updateMany({
       where: { refreshTokenFamily: session.refreshTokenFamily },
@@ -410,7 +410,7 @@ export async function refreshAccessToken(
     },
   });
 
-  authLogger.info('Token refreshed', { userId: session.userId, sessionId: session.id });
+  authLogger.info({ userId: session.userId, sessionId: session.id }, 'Token refreshed');
 
   return {
     accessToken: newAccessToken,
@@ -435,7 +435,7 @@ export async function logout(
       data: { revokedAt: new Date() },
     });
 
-    authLogger.info('All sessions revoked', { userId });
+    authLogger.info({ userId }, 'All sessions revoked');
     return;
   }
 
@@ -446,7 +446,7 @@ export async function logout(
       data: { revokedAt: new Date() },
     });
 
-    authLogger.info('Session revoked', { userId, sessionId });
+    authLogger.info({ userId, sessionId }, 'Session revoked');
     return;
   }
 
@@ -461,7 +461,7 @@ export async function logout(
       data: { revokedAt: new Date() },
     });
 
-    authLogger.info('Device sessions revoked', { userId, deviceId });
+    authLogger.info({ userId, deviceId }, 'Device sessions revoked');
   }
 }
 
@@ -516,7 +516,7 @@ export async function revokeSession(userId: string, sessionId: string): Promise<
     data: { revokedAt: new Date() },
   });
 
-  authLogger.info('Session revoked by user', { userId, sessionId });
+  authLogger.info({ userId, sessionId }, 'Session revoked by user');
 }
 
 export async function getUserById(userId: string): Promise<User | null> {
@@ -554,5 +554,5 @@ export async function deleteUser(userId: string): Promise<void> {
     data: { revokedAt: new Date() },
   });
 
-  authLogger.info('User account deleted', { userId });
+  authLogger.info({ userId }, 'User account deleted');
 }

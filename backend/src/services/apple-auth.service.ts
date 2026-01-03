@@ -55,7 +55,7 @@ async function fetchApplePublicKeys(): Promise<AppleKeysResponse> {
     logger.info('Apple public keys fetched successfully');
     return cachedAppleKeys;
   } catch (error) {
-    logger.error('Failed to fetch Apple public keys', { error });
+    logger.error({ error }, 'Failed to fetch Apple public keys');
     throw new InternalError('Failed to verify Apple credentials');
   }
 }
@@ -124,7 +124,7 @@ export async function verifyAppleIdentityToken(identityToken: string): Promise<{
       throw error;
     }
 
-    logger.error('Apple token verification failed', { error });
+    logger.error({ error }, 'Apple token verification failed');
     throw new UnauthorizedError('Failed to verify Apple identity token');
   }
 }
@@ -175,7 +175,7 @@ export async function validateAppleAuthorizationCode(
 
     if (!response.ok) {
       const errorBody = await response.text();
-      logger.error('Apple token exchange failed', { status: response.status, body: errorBody });
+      logger.error({ status: response.status, body: errorBody }, 'Apple token exchange failed');
       throw new UnauthorizedError('Failed to exchange Apple authorization code');
     }
 
@@ -196,7 +196,7 @@ export async function validateAppleAuthorizationCode(
     if (error instanceof UnauthorizedError) {
       throw error;
     }
-    logger.error('Apple authorization code validation failed', { error });
+    logger.error({ error }, 'Apple authorization code validation failed');
     throw new UnauthorizedError('Failed to validate Apple authorization');
   }
 }
@@ -221,9 +221,9 @@ export async function revokeAppleTokens(refreshToken: string): Promise<void> {
     });
 
     if (!response.ok) {
-      logger.warn('Failed to revoke Apple token', { status: response.status });
+      logger.warn({ status: response.status }, 'Failed to revoke Apple token');
     }
   } catch (error) {
-    logger.error('Error revoking Apple token', { error });
+    logger.error({ error }, 'Error revoking Apple token');
   }
 }

@@ -58,7 +58,7 @@ async function fetchGooglePublicKeys(): Promise<GoogleKeysResponse> {
     logger.info('Google public keys fetched successfully');
     return cachedGoogleKeys;
   } catch (error) {
-    logger.error('Failed to fetch Google public keys', { error });
+    logger.error({ error }, 'Failed to fetch Google public keys');
     throw new InternalError('Failed to verify Google credentials');
   }
 }
@@ -131,7 +131,7 @@ export async function verifyGoogleIdToken(idToken: string): Promise<{
       throw error;
     }
 
-    logger.error('Google token verification failed', { error });
+    logger.error({ error }, 'Google token verification failed');
     throw new UnauthorizedError('Failed to verify Google ID token');
   }
 }
@@ -178,7 +178,7 @@ export async function verifyGoogleAccessToken(accessToken: string): Promise<{
     if (error instanceof UnauthorizedError) {
       throw error;
     }
-    logger.error('Google access token verification failed', { error });
+    logger.error({ error }, 'Google access token verification failed');
     throw new UnauthorizedError('Failed to verify Google access token');
   }
 }
@@ -229,7 +229,7 @@ export async function getGoogleUserInfo(accessToken: string): Promise<{
     if (error instanceof UnauthorizedError) {
       throw error;
     }
-    logger.error('Failed to get Google user info', { error });
+    logger.error({ error }, 'Failed to get Google user info');
     throw new UnauthorizedError('Failed to fetch Google user info');
   }
 }
@@ -241,9 +241,9 @@ export async function revokeGoogleToken(token: string): Promise<void> {
     });
 
     if (!response.ok) {
-      logger.warn('Failed to revoke Google token', { status: response.status });
+      logger.warn({ status: response.status }, 'Failed to revoke Google token');
     }
   } catch (error) {
-    logger.error('Error revoking Google token', { error });
+    logger.error({ error }, 'Error revoking Google token');
   }
 }

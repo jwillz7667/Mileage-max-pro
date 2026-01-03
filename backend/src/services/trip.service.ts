@@ -49,7 +49,7 @@ export async function createTrip(
     },
   });
 
-  tripLogger.info('Trip created', { tripId: trip.id, userId, detectionMethod: input.detectionMethod });
+  tripLogger.info({ tripId: trip.id, userId, detectionMethod: input.detectionMethod }, 'Trip created');
 
   return trip;
 }
@@ -136,7 +136,7 @@ export async function updateTrip(
     data: updateData,
   });
 
-  tripLogger.info('Trip updated', { tripId, userId, fields: Object.keys(input) });
+  tripLogger.info({ tripId, userId, fields: Object.keys(input) }, 'Trip updated');
 
   return updated;
 }
@@ -185,7 +185,7 @@ export async function addWaypoints(
     data: waypointData,
   });
 
-  tripLogger.debug('Waypoints added', { tripId, count: result.count });
+  tripLogger.debug({ tripId, count: result.count }, 'Waypoints added');
 
   return { count: result.count };
 }
@@ -274,12 +274,12 @@ export async function completeTrip(
     },
   });
 
-  tripLogger.info('Trip completed', {
+  tripLogger.info({
     tripId,
     userId,
     distanceMiles: distanceMeters * METERS_TO_MILES,
     durationMinutes: durationSeconds / 60,
-  });
+  }, 'Trip completed');
 
   return completedTrip;
 }
@@ -370,7 +370,7 @@ export async function deleteTrip(userId: string, tripId: string): Promise<void> 
     data: { deletedAt: new Date() },
   });
 
-  tripLogger.info('Trip deleted', { tripId, userId });
+  tripLogger.info({ tripId, userId }, 'Trip deleted');
 }
 
 // Haversine formula to calculate distance between two coordinates

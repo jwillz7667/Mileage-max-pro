@@ -53,7 +53,7 @@ export function errorHandler(
       },
     };
 
-    logger.warn('Validation error', { ...errorInfo, validationErrors });
+    logger.warn({ ...errorInfo, validationErrors }, 'Validation error');
     res.status(422).json(response);
     return;
   }
@@ -72,7 +72,7 @@ export function errorHandler(
       },
     };
 
-    logger.error('Database error', errorInfo);
+    logger.error(errorInfo, 'Database error');
     res.status(prismaError.statusCode).json(response);
     return;
   }
@@ -95,9 +95,9 @@ export function errorHandler(
     }
 
     if (error.statusCode >= 500) {
-      logger.error('Application error', errorInfo);
+      logger.error(errorInfo, 'Application error');
     } else {
-      logger.warn('Client error', errorInfo);
+      logger.warn(errorInfo, 'Client error');
     }
 
     res.status(error.statusCode).json(response);
@@ -105,7 +105,7 @@ export function errorHandler(
   }
 
   // Handle unexpected errors
-  logger.error('Unexpected error', errorInfo);
+  logger.error(errorInfo, 'Unexpected error');
 
   const response: ApiResponse = {
     success: false,

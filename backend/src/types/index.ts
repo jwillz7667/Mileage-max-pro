@@ -297,6 +297,9 @@ export interface CreateFuelPurchaseRequest extends CreateExpenseRequest {
   isFullTank?: boolean;
   stationName?: string;
   stationBrand?: string;
+  stationAddress?: string;
+  stationLatitude?: number;
+  stationLongitude?: number;
 }
 
 // ============================================================================
@@ -471,4 +474,93 @@ export interface NotificationPayload {
   title: string;
   body: string;
   data?: Record<string, unknown>;
+}
+
+// ============================================================================
+// Service Input Type Aliases
+// ============================================================================
+
+// Trip service input types
+export type CreateTripInput = CreateTripRequest;
+export type UpdateTripInput = UpdateTripRequest;
+export type CompleteTripInput = CompleteTripRequest;
+export interface AddWaypointsInput {
+  waypoints: WaypointInput[];
+}
+export interface TripFilterInput extends TripFilters {
+  page: number;
+  perPage: number;
+  sort: string;
+}
+
+// Vehicle service input types
+export type CreateVehicleInput = CreateVehicleRequest;
+export type UpdateVehicleInput = UpdateVehicleRequest;
+export type CreateMaintenanceRecordInput = MaintenanceRecordRequest;
+export interface VehicleFilterInput {
+  isActive?: boolean;
+  isPrimary?: boolean;
+  fuelType?: string;
+  page: number;
+  perPage: number;
+  sort: string;
+}
+
+// Route service input types
+export type CreateRouteInput = CreateRouteRequest;
+export interface UpdateRouteInput {
+  name?: string;
+  scheduledDate?: string;
+  scheduledStartTime?: string;
+  startLocationId?: string;
+  endLocationId?: string;
+  returnToStart?: boolean;
+  optimizationMode?: 'fastest' | 'shortest' | 'balanced';
+  notes?: string;
+}
+export type CreateStopInput = CreateStopRequest;
+export type UpdateStopInput = UpdateStopRequest;
+export interface RouteFilterInput {
+  status?: string;
+  startDate?: string;
+  endDate?: string;
+  page: number;
+  perPage: number;
+  sort: string;
+}
+
+// Expense service input types
+export type CreateExpenseInput = CreateExpenseRequest;
+export interface UpdateExpenseInput extends Partial<CreateExpenseRequest> {
+  receiptUrl?: string;
+  reimbursementStatus?: 'pending' | 'submitted' | 'approved' | 'denied' | 'paid';
+}
+export type CreateFuelPurchaseInput = CreateFuelPurchaseRequest;
+export interface ExpenseFilterInput {
+  vehicleId?: string;
+  tripId?: string;
+  category?: string;
+  startDate?: string;
+  endDate?: string;
+  minAmount?: number;
+  maxAmount?: number;
+  isReimbursable?: boolean;
+  isTaxDeductible?: boolean;
+  page: number;
+  perPage: number;
+  sort: string;
+}
+
+// Analytics service input types
+export interface AnalyticsQueryInput {
+  period: 'week' | 'month' | 'quarter' | 'year' | 'custom';
+  startDate?: string;
+  endDate?: string;
+  vehicleIds?: string[];
+}
+
+export interface TaxSummaryQueryInput {
+  taxYear?: number;
+  year?: number;
+  vehicleIds?: string[];
 }

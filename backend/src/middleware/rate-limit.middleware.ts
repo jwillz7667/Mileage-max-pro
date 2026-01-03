@@ -70,7 +70,12 @@ export async function rateLimiter(
     let limitConfig: RateLimitConfig | undefined;
 
     for (const [pattern, config] of Object.entries(endpointLimits)) {
-      const [method, path] = pattern.split(':');
+      const colonIndex = pattern.indexOf(':');
+      if (colonIndex === -1) continue;
+
+      const method = pattern.substring(0, colonIndex);
+      const path = pattern.substring(colonIndex + 1);
+
       if (req.method === method) {
         // Convert route pattern to regex
         const regexPattern = path

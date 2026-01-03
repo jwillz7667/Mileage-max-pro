@@ -12,7 +12,7 @@ import type {
 // Trip Processing Processor
 export async function processTripJob(job: Job<TripProcessingJob>): Promise<void> {
   const { tripId, userId } = job.data;
-  jobLogger.info('Processing trip', { jobId: job.id, tripId });
+  jobLogger.info({ jobId: job.id, tripId }, 'Processing trip');
 
   try {
     const trip = await prisma.trip.findUnique({
@@ -25,7 +25,7 @@ export async function processTripJob(job: Job<TripProcessingJob>): Promise<void>
     });
 
     if (!trip) {
-      jobLogger.warn('Trip not found for processing', { tripId });
+      jobLogger.warn({ tripId }, 'Trip not found for processing');
       return;
     }
 
@@ -68,9 +68,9 @@ export async function processTripJob(job: Job<TripProcessingJob>): Promise<void>
       data: { status: 'verified' },
     });
 
-    jobLogger.info('Trip processed successfully', { tripId });
+    jobLogger.info({ tripId }, 'Trip processed successfully');
   } catch (error) {
-    jobLogger.error('Trip processing failed', { tripId, error });
+    jobLogger.error({ tripId, error }, 'Trip processing failed');
     throw error;
   }
 }
@@ -78,7 +78,7 @@ export async function processTripJob(job: Job<TripProcessingJob>): Promise<void>
 // Report Generation Processor
 export async function processReportJob(job: Job<ReportGenerationJob>): Promise<void> {
   const { reportId, userId, format } = job.data;
-  jobLogger.info('Generating report', { jobId: job.id, reportId, format });
+  jobLogger.info({ jobId: job.id, reportId, format }, 'Generating report');
 
   try {
     const report = await prisma.mileageReport.findUnique({
@@ -86,27 +86,31 @@ export async function processReportJob(job: Job<ReportGenerationJob>): Promise<v
     });
 
     if (!report) {
-      jobLogger.warn('Report not found for generation', { reportId });
+      jobLogger.warn({ reportId }, 'Report not found for generation');
       return;
     }
 
     // Get trips for the report period
-    const trips = await prisma.trip.findMany({
-      where: {
-        userId,
-        deletedAt: null,
-        startTime: {
-          gte: report.dateRangeStart,
-          lte: report.dateRangeEnd,
-        },
-        status: { in: ['completed', 'verified'] },
-        ...(report.vehicleIds.length > 0 && {
-          vehicleId: { in: report.vehicleIds },
-        }),
-        ...(report.categories.length > 0 && {
-          category: { in: report.categories as any[] },
-        }),
+    const whereClause: any = {
+      userId,
+      deletedAt: null,
+      startTime: {
+        gte: report.dateRangeStart,
+        lte: report.dateRangeEnd,
       },
+      status: { in: ['completed', 'verified'] },
+    };
+
+    if (report.vehicleIds.length > 0) {
+      whereClause.vehicleId = { in: report.vehicleIds };
+    }
+
+    if (report.categories.length > 0) {
+      whereClause.category = { in: report.categories };
+    }
+
+    const trips = await prisma.trip.findMany({
+      where: whereClause,
       include: {
         vehicle: {
           select: { nickname: true, make: true, model: true },
@@ -125,7 +129,7 @@ export async function processReportJob(job: Job<ReportGenerationJob>): Promise<v
         distance: t.distanceMeters * 0.000621371,
         category: t.category,
         purpose: t.purpose ?? '',
-        vehicle: t.vehicle?.nickname ?? 'Unknown',
+        vehicle: (t as unknown as { vehicle?: { nickname?: string } }).vehicle?.nickname ?? 'Unknown',
       })),
       summary: {
         totalTrips: trips.length,
@@ -152,9 +156,9 @@ export async function processReportJob(job: Job<ReportGenerationJob>): Promise<v
       },
     });
 
-    jobLogger.info('Report generated successfully', { reportId, tripCount: trips.length });
+    jobLogger.info({ reportId, tripCount: trips.length }, 'Report generated successfully');
   } catch (error) {
-    jobLogger.error('Report generation failed', { reportId, error });
+    jobLogger.error({ reportId, error }, 'Report generation failed');
 
     await prisma.mileageReport.update({
       where: { id: reportId },
@@ -168,17 +172,17 @@ export async function processReportJob(job: Job<ReportGenerationJob>): Promise<v
 // Route Optimization Processor
 export async function processRouteOptimizationJob(job: Job<RouteOptimizationJob>): Promise<void> {
   const { routeId, userId } = job.data;
-  jobLogger.info('Optimizing route', { jobId: job.id, routeId });
+  jobLogger.info({ jobId: job.id, routeId }, 'Optimizing route');
 
   // Route optimization is handled synchronously in the service
   // This job is for async/background optimization requests
-  jobLogger.info('Route optimization completed', { routeId });
+  jobLogger.info({ routeId }, 'Route optimization completed');
 }
 
 // Notification Processor
 export async function processNotificationJob(job: Job<NotificationJob>): Promise<void> {
   const { userId, type, title, body, data } = job.data;
-  jobLogger.info('Sending notification', { jobId: job.id, userId, type });
+  jobLogger.info({ jobId: job.id, userId, type }, 'Sending notification');
 
   try {
     // Get user's push tokens
@@ -197,21 +201,21 @@ export async function processNotificationJob(job: Job<NotificationJob>): Promise
       .filter((t): t is string => t !== null);
 
     if (pushTokens.length === 0) {
-      jobLogger.debug('No push tokens found for user', { userId });
+      jobLogger.debug({ userId }, 'No push tokens found for user');
       return;
     }
 
     // TODO: Implement APNS push notification sending
     // For now, just log the notification
-    jobLogger.info('Would send push notification', {
+    jobLogger.info({
       userId,
       type,
       title,
       body,
       tokenCount: pushTokens.length,
-    });
+    }, 'Would send push notification');
   } catch (error) {
-    jobLogger.error('Notification sending failed', { userId, type, error });
+    jobLogger.error({ userId, type, error }, 'Notification sending failed');
     throw error;
   }
 }
@@ -219,10 +223,10 @@ export async function processNotificationJob(job: Job<NotificationJob>): Promise
 // Sync Processor
 export async function processSyncJob(job: Job<SyncJob>): Promise<void> {
   const { userId, deviceId, lastSyncAt } = job.data;
-  jobLogger.info('Processing sync', { jobId: job.id, userId, deviceId });
+  jobLogger.info({ jobId: job.id, userId, deviceId }, 'Processing sync');
 
   // TODO: Implement differential sync logic
-  jobLogger.info('Sync completed', { userId, deviceId });
+  jobLogger.info({ userId, deviceId }, 'Sync completed');
 }
 
 // Helper function to generate encoded polyline

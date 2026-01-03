@@ -6,13 +6,11 @@ declare global {
   var prisma: PrismaClient | undefined;
 }
 
-const prismaClientOptions = {
+export const prisma = globalThis.prisma ?? new PrismaClient({
   log: config.server.isDevelopment
-    ? ['query', 'error', 'warn'] as const
-    : ['error'] as const,
-};
-
-export const prisma = globalThis.prisma ?? new PrismaClient(prismaClientOptions);
+    ? [{ emit: 'stdout', level: 'query' }, { emit: 'stdout', level: 'error' }, { emit: 'stdout', level: 'warn' }]
+    : [{ emit: 'stdout', level: 'error' }],
+});
 
 if (config.server.isDevelopment) {
   globalThis.prisma = prisma;

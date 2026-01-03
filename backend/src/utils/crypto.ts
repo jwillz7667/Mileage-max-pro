@@ -49,12 +49,13 @@ export function decrypt(encryptedData: string): string {
   return decrypted;
 }
 
-export function encryptBuffer(data: Buffer): Buffer {
+export function encryptBuffer(data: Buffer | Uint8Array): Buffer {
   const key = getEncryptionKey();
   const iv = crypto.randomBytes(IV_LENGTH);
   const cipher = crypto.createCipheriv(ALGORITHM, key, iv);
 
-  const encrypted = Buffer.concat([cipher.update(data), cipher.final()]);
+  const bufferData = data instanceof Buffer ? data : Buffer.from(data);
+  const encrypted = Buffer.concat([cipher.update(bufferData), cipher.final()]);
   const authTag = cipher.getAuthTag();
 
   // Combine: iv + authTag + encrypted

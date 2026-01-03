@@ -10,7 +10,7 @@ const refreshSecret = new TextEncoder().encode(config.jwt.refreshSecret);
 
 function parseExpiry(expiry: string): number {
   const match = expiry.match(/^(\d+)([smhd])$/);
-  if (!match) {
+  if (!match || !match[1] || !match[2]) {
     throw new Error(`Invalid expiry format: ${expiry}`);
   }
 

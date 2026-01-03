@@ -8,7 +8,7 @@ import type {
   VehicleFilterInput,
   PaginatedResponse,
 } from '../types/index.js';
-import type { Vehicle, VehicleMaintenanceRecord, SubscriptionTier, Prisma } from '@prisma/client';
+import type { Vehicle, VehicleMaintenanceRecord, SubscriptionTier, Prisma, FuelType } from '@prisma/client';
 
 const VEHICLE_LIMITS: Record<SubscriptionTier, number> = {
   free: 1,
@@ -68,7 +68,7 @@ export async function createVehicle(
     },
   });
 
-  vehicleLogger.info('Vehicle created', { vehicleId: vehicle.id, userId });
+  vehicleLogger.info({ vehicleId: vehicle.id, userId }, 'Vehicle created');
 
   return vehicle;
 }
@@ -155,7 +155,7 @@ export async function updateVehicle(
     data: updateData,
   });
 
-  vehicleLogger.info('Vehicle updated', { vehicleId, userId });
+  vehicleLogger.info({ vehicleId, userId }, 'Vehicle updated');
 
   return updated;
 }
@@ -193,7 +193,7 @@ export async function deleteVehicle(userId: string, vehicleId: string): Promise<
     }
   }
 
-  vehicleLogger.info('Vehicle deleted', { vehicleId, userId });
+  vehicleLogger.info({ vehicleId, userId }, 'Vehicle deleted');
 }
 
 export async function listVehicles(
@@ -209,7 +209,7 @@ export async function listVehicles(
   };
 
   if (isActive !== undefined) where.isActive = isActive;
-  if (fuelType) where.fuelType = fuelType;
+  if (fuelType) where.fuelType = fuelType as FuelType;
 
   const sortField = sort.startsWith('-') ? sort.slice(1) : sort;
   const sortOrder = sort.startsWith('-') ? 'desc' : 'asc';
@@ -291,7 +291,7 @@ export async function addMaintenanceRecord(
     });
   }
 
-  vehicleLogger.info('Maintenance record added', { vehicleId, recordId: record.id, type: input.maintenanceType });
+  vehicleLogger.info({ vehicleId, recordId: record.id, type: input.maintenanceType }, 'Maintenance record added');
 
   return record;
 }

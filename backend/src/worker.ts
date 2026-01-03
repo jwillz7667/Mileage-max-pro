@@ -1,4 +1,4 @@
-import { Worker } from 'bullmq';
+import { Worker, Job } from 'bullmq';
 import { redis } from './config/redis.js';
 import { connectDatabase, disconnectDatabase } from './config/database.js';
 import { jobLogger } from './utils/logger.js';
@@ -32,28 +32,28 @@ const syncWorker = new Worker('sync', processSyncJob, workerOptions);
 const workers = [tripWorker, reportWorker, routeWorker, notificationWorker, syncWorker];
 
 workers.forEach((worker) => {
-  worker.on('completed', (job) => {
-    jobLogger.info('Job completed', {
+  worker.on('completed', (job: Job) => {
+    jobLogger.info({
       queue: worker.name,
       jobId: job.id,
       name: job.name,
-    });
+    }, 'Job completed');
   });
 
-  worker.on('failed', (job, error) => {
-    jobLogger.error('Job failed', {
+  worker.on('failed', (job: Job | undefined, error: Error) => {
+    jobLogger.error({
       queue: worker.name,
       jobId: job?.id,
       name: job?.name,
       error: error.message,
-    });
+    }, 'Job failed');
   });
 
-  worker.on('error', (error) => {
-    jobLogger.error('Worker error', {
+  worker.on('error', (error: Error) => {
+    jobLogger.error({
       queue: worker.name,
       error: error.message,
-    });
+    }, 'Worker error');
   });
 });
 
@@ -75,12 +75,12 @@ process.on('SIGINT', shutdown);
 async function start(): Promise<void> {
   await connectDatabase();
 
-  jobLogger.info('Workers started', {
+  jobLogger.info({
     queues: workers.map((w) => w.name),
-  });
+  }, 'Workers started');
 }
 
-start().catch((error) => {
-  jobLogger.error('Failed to start workers', { error });
+start().catch((error: Error) => {
+  jobLogger.error({ error }, 'Failed to start workers');
   process.exit(1);
 });

@@ -146,10 +146,10 @@ async function start(): Promise<void> {
     await connectRedis();
 
     const server = app.listen(config.server.port, () => {
-      logger.info(`Server running on port ${config.server.port}`, {
+      logger.info({
         env: config.server.env,
         apiVersion: config.server.apiVersion,
-      });
+      }, `Server running on port ${config.server.port}`);
     });
 
     // Handle server errors
@@ -161,7 +161,7 @@ async function start(): Promise<void> {
       throw error;
     });
   } catch (error) {
-    logger.error('Failed to start server', { error });
+    logger.error({ error }, 'Failed to start server');
     process.exit(1);
   }
 }
