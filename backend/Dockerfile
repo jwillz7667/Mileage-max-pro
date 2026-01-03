@@ -1,5 +1,8 @@
-# Build stage
-FROM node:22-alpine AS builder
+# Simple single-stage build for Railway
+FROM node:22-slim
+
+# Install OpenSSL for Prisma
+RUN apt-get update -y && apt-get install -y openssl wget && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
@@ -7,45 +10,17 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 
-# Copy source code
+# Copy source and build
 COPY . .
-
-# Generate Prisma client and build
 RUN npm run db:generate
 RUN npm run build
 
-# Production stage
-FROM node:22-alpine AS production
-
-# Create non-root user first
-RUN addgroup -g 1001 -S nodejs && adduser -S nodejs -u 1001 -G nodejs
-
-WORKDIR /app
-
-# Install production dependencies only
-COPY --chown=nodejs:nodejs package*.json ./
-RUN npm ci --only=production
-
-# Copy Prisma schema and generated client
-COPY --chown=nodejs:nodejs --from=builder /app/prisma ./prisma
-COPY --chown=nodejs:nodejs --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-COPY --chown=nodejs:nodejs --from=builder /app/node_modules/@prisma ./node_modules/@prisma
-
-# Copy built application
-COPY --chown=nodejs:nodejs --from=builder /app/dist ./dist
-
-# Set proper ownership of node_modules
-RUN chown -R nodejs:nodejs /app
-
-# Switch to non-root user
-USER nodejs
-
-# Expose port
+# Expose port (Railway sets PORT dynamically)
 EXPOSE 3000
 
-# Health check - Railway sets PORT dynamically
-HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:${PORT:-3000}/health || exit 1
 
-# Start command - run migrations then start server
+# Start command
 CMD ["sh", "-c", "npm run db:migrate && npm run start:prod"]
