@@ -141,11 +141,15 @@ process.on('SIGINT', shutdown);
 // Start server
 async function start(): Promise<void> {
   try {
+    logger.info({ port: config.server.port }, 'Starting server...');
+
     // Start HTTP server first (so healthcheck passes during DB connection)
-    const server = app.listen(config.server.port, () => {
+    // Explicitly bind to 0.0.0.0 for Railway compatibility
+    const server = app.listen(config.server.port, '0.0.0.0', () => {
       logger.info({
         env: config.server.env,
         apiVersion: config.server.apiVersion,
+        port: config.server.port,
       }, `Server running on port ${config.server.port}`);
     });
 
