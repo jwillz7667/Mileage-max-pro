@@ -48,6 +48,12 @@ final class HapticManager {
     }
 
     private func setupHapticEngine() {
+        // Skip haptics setup on simulator - they're not supported
+        #if targetEnvironment(simulator)
+        supportsHaptics = false
+        return
+        #endif
+
         // Check for Core Haptics support
         guard CHHapticEngine.capabilitiesForHardware().supportsHaptics else {
             supportsHaptics = false

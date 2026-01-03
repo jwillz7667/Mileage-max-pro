@@ -13,11 +13,11 @@ enum APIConstants {
     // MARK: - Base URLs
 
     #if DEBUG
-    static let baseURL = URL(string: "https://api-staging.mileagemaxpro.com")!
-    static let websocketURL = URL(string: "wss://api-staging.mileagemaxpro.com")!
+    static let baseURL = URL(string: "https://mileage-max-pro-production.up.railway.app")!
+    static let websocketURL = URL(string: "wss://mileage-max-pro-production.up.railway.app")!
     #else
-    static let baseURL = URL(string: "https://api.mileagemaxpro.com")!
-    static let websocketURL = URL(string: "wss://api.mileagemaxpro.com")!
+    static let baseURL = URL(string: "https://mileage-max-pro-production.up.railway.app")!
+    static let websocketURL = URL(string: "wss://mileage-max-pro-production.up.railway.app")!
     #endif
 
     // MARK: - API Versioning

@@ -237,7 +237,10 @@ struct AuthenticationView: View {
 
 struct SignInWithAppleButton: UIViewRepresentable {
     func makeUIView(context: Context) -> ASAuthorizationAppleIDButton {
-        ASAuthorizationAppleIDButton(type: .signIn, style: .black)
+        let button = ASAuthorizationAppleIDButton(type: .signIn, style: .black)
+        // Disable autoresizing mask to prevent constraint conflicts with SwiftUI layout
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
     }
 
     func updateUIView(_ uiView: ASAuthorizationAppleIDButton, context: Context) {}

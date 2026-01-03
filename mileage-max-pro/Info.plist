@@ -2,22 +2,26 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>MKDirectionsRequest</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>com.apple.maps.directionsrequest</string>
+			</array>
+		</dict>
+	</array>
+	<key>MKDirectionsApplicationSupportedModes</key>
+	<array>
+		<string>MKDirectionsModeCar</string>
+		<string>MKDirectionsModeStreetCar</string>
+	</array>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>location</string>
 		<string>remote-notification</string>
 	</array>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>MileageMax Pro needs access to your location to automatically track your trips and calculate mileage for tax deductions, even when the app is in the background.</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>MileageMax Pro needs access to your location to track your trips and calculate mileage for tax deductions.</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>MileageMax Pro needs access to your location to automatically track your trips in the background.</string>
-	<key>NSMotionUsageDescription</key>
-	<string>MileageMax Pro uses motion data to detect when you start driving and automatically begin trip tracking.</string>
-	<key>NSCameraUsageDescription</key>
-	<string>MileageMax Pro uses your camera to scan receipts for expense tracking.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>MileageMax Pro needs access to your photos to attach receipt images to expenses.</string>
 </dict>
 </plist>
