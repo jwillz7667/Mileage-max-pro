@@ -245,7 +245,7 @@ final class APIClient: ObservableObject {
         tokenRefreshTask = Task {
             defer { tokenRefreshTask = nil }
 
-            let endpoint = AuthEndpoints.refreshToken(refreshToken: refreshToken)
+            let endpoint = AuthEndpoints.refreshToken(refreshToken: refreshToken, deviceId: DeviceInfo.deviceId)
             let request = try endpoint.asURLRequest(baseURL: baseURL, accessToken: nil)
 
             let (data, response) = try await session.data(for: request)
