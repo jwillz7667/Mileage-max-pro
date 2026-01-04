@@ -340,20 +340,20 @@ struct CategorySummaryItem: View {
 
     private var categoryColor: Color {
         switch category {
-        case .fuel: return .orange
-        case .maintenance: return .blue
-        case .insurance: return .purple
-        case .parking: return .green
-        case .tolls: return .cyan
-        case .carWash: return .teal
-        case .registration: return .indigo
-        case .repairs: return .red
-        case .supplies: return .brown
-        case .phone: return .mint
-        case .equipment: return .yellow
-        case .meals: return .pink
-        case .lodging: return .secondary
-        case .other: return .gray
+        case .fuel: return ColorConstants.ExpenseCategory.fuel
+        case .maintenance: return ColorConstants.ExpenseCategory.maintenance
+        case .insurance: return ColorConstants.ExpenseCategory.insurance
+        case .parking: return ColorConstants.ExpenseCategory.parking
+        case .tolls: return ColorConstants.ExpenseCategory.tolls
+        case .carWash: return ColorConstants.ExpenseCategory.carWash
+        case .registration: return ColorConstants.ExpenseCategory.registration
+        case .repairs: return ColorConstants.ExpenseCategory.repairs
+        case .supplies: return ColorConstants.ExpenseCategory.supplies
+        case .phone: return ColorConstants.primary
+        case .equipment: return ColorConstants.warning
+        case .meals: return ColorConstants.error
+        case .lodging: return ColorConstants.secondary
+        case .other: return ColorConstants.ExpenseCategory.other
         }
     }
 }
@@ -372,7 +372,7 @@ struct FilterChip: View {
                 .fontWeight(isSelected ? .medium : .regular)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 8)
-                .background(isSelected ? Color.blue : Color(.secondarySystemGroupedBackground))
+                .background(isSelected ? ColorConstants.primary : ColorConstants.Surface.secondaryGrouped)
                 .foregroundStyle(isSelected ? .white : .primary)
                 .clipShape(Capsule())
         }

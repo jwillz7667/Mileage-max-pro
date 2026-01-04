@@ -3,11 +3,12 @@
 //  MileageMaxPro
 //
 //  Enterprise iOS Mileage Tracking Application
+//  Premium Button Components - iOS 26 Design System
 //
 
 import SwiftUI
 
-/// Glass-styled button with Liquid Glass effect
+/// Premium Glass-styled button with iOS 26 design
 struct GlassButton: View {
     let title: String
     let icon: String?
@@ -58,7 +59,7 @@ struct GlassButton: View {
                         .fontWeight(.semibold)
                 }
             }
-            .foregroundStyle(isEnabled ? style.foregroundColor : style.disabledForegroundColor)
+            .foregroundStyle(isEnabled ? style.foregroundColor : ColorConstants.Text.disabled)
             .frame(height: size.height)
             .frame(maxWidth: size.isFullWidth ? .infinity : nil)
             .padding(.horizontal, size.horizontalPadding)
@@ -80,12 +81,12 @@ struct GlassButton: View {
             DragGesture(minimumDistance: 0)
                 .onChanged { _ in
                     guard isEnabled && !isLoading else { return }
-                    withAnimation(.spring(response: 0.2, dampingFraction: 0.8)) {
+                    withAnimation(.quickResponse) {
                         isPressed = true
                     }
                 }
                 .onEnded { _ in
-                    withAnimation(.spring(response: 0.25, dampingFraction: 0.7)) {
+                    withAnimation(.premiumSpring) {
                         isPressed = false
                     }
                 }
@@ -96,40 +97,50 @@ struct GlassButton: View {
     private var buttonBackground: some View {
         switch style {
         case .primary:
-            LinearGradient(
-                colors: [ColorConstants.primary, ColorConstants.primary.opacity(0.9)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
+            ColorConstants.primary
 
         case .secondary:
-            Capsule()
-                .fill(.ultraThinMaterial)
-                .overlay(
-                    Capsule()
-                        .fill(Color.white.opacity(0.1))
-                )
+            ZStack {
+                Capsule()
+                    .fill(ColorConstants.Surface.card)
+                Capsule()
+                    .fill(
+                        LinearGradient(
+                            colors: [Color.white.opacity(0.5), Color.clear],
+                            startPoint: .topLeading,
+                            endPoint: .center
+                        )
+                    )
+            }
 
         case .tertiary:
             Color.clear
 
         case .destructive:
-            LinearGradient(
-                colors: [ColorConstants.error, ColorConstants.error.opacity(0.9)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
+            ColorConstants.error
 
         case .success:
-            LinearGradient(
-                colors: [ColorConstants.success, ColorConstants.success.opacity(0.9)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
+            ColorConstants.success
 
         case .glass:
-            Capsule()
-                .fill(.ultraThinMaterial)
+            ZStack {
+                Capsule()
+                    .fill(ColorConstants.Surface.card)
+                Capsule()
+                    .fill(.ultraThinMaterial)
+                    .opacity(0.3)
+                Capsule()
+                    .fill(
+                        LinearGradient(
+                            colors: [Color.white.opacity(0.4), Color.clear],
+                            startPoint: .topLeading,
+                            endPoint: .center
+                        )
+                    )
+            }
+
+        case .outline:
+            Color.clear
         }
     }
 
@@ -138,10 +149,13 @@ struct GlassButton: View {
         switch style {
         case .secondary, .glass:
             Capsule()
-                .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                .stroke(ColorConstants.Border.standard, lineWidth: 1)
         case .tertiary:
             Capsule()
-                .stroke(ColorConstants.primary.opacity(0.3), lineWidth: 1)
+                .stroke(ColorConstants.primary.opacity(0.3), lineWidth: 1.5)
+        case .outline:
+            Capsule()
+                .stroke(ColorConstants.primary, lineWidth: 1.5)
         default:
             EmptyView()
         }
@@ -157,6 +171,7 @@ enum GlassButtonStyle {
     case destructive
     case success
     case glass
+    case outline
 
     var foregroundColor: Color {
         switch self {
@@ -164,13 +179,9 @@ enum GlassButtonStyle {
             return .white
         case .secondary, .glass:
             return ColorConstants.Text.primary
-        case .tertiary:
+        case .tertiary, .outline:
             return ColorConstants.primary
         }
-    }
-
-    var disabledForegroundColor: Color {
-        ColorConstants.Text.tertiary
     }
 
     var shadowColor: Color {
@@ -182,7 +193,7 @@ enum GlassButtonStyle {
         case .success:
             return ColorConstants.success
         default:
-            return Color.black
+            return Color.black.opacity(0.5)
         }
     }
 }
@@ -197,19 +208,19 @@ enum GlassButtonSize {
 
     var height: CGFloat {
         switch self {
-        case .small: return 36
-        case .regular: return 44
-        case .large: return 52
-        case .fullWidth: return 52
+        case .small: return 40
+        case .regular: return 48
+        case .large: return 56
+        case .fullWidth: return 56
         }
     }
 
     var horizontalPadding: CGFloat {
         switch self {
         case .small: return 16
-        case .regular: return 20
-        case .large: return 24
-        case .fullWidth: return 24
+        case .regular: return 24
+        case .large: return 28
+        case .fullWidth: return 28
         }
     }
 
@@ -248,7 +259,7 @@ struct GlassIconButton: View {
     init(
         icon: String,
         style: GlassButtonStyle = .secondary,
-        size: CGFloat = 44,
+        size: CGFloat = 48,
         action: @escaping () -> Void
     ) {
         self.icon = icon
@@ -264,13 +275,13 @@ struct GlassIconButton: View {
         }) {
             Image(systemName: icon)
                 .font(.system(size: size * 0.4, weight: .semibold))
-                .foregroundStyle(isEnabled ? style.foregroundColor : style.disabledForegroundColor)
+                .foregroundStyle(isEnabled ? style.foregroundColor : ColorConstants.Text.disabled)
                 .frame(width: size, height: size)
                 .background(buttonBackground)
                 .clipShape(Circle())
                 .overlay(buttonBorder)
                 .shadow(
-                    color: style.shadowColor.opacity(isPressed ? 0.1 : 0.15),
+                    color: style.shadowColor.opacity(isPressed ? 0.08 : 0.12),
                     radius: isPressed ? 2 : 6,
                     x: 0,
                     y: isPressed ? 1 : 3
@@ -283,12 +294,12 @@ struct GlassIconButton: View {
             DragGesture(minimumDistance: 0)
                 .onChanged { _ in
                     guard isEnabled else { return }
-                    withAnimation(.spring(response: 0.2, dampingFraction: 0.8)) {
+                    withAnimation(.quickResponse) {
                         isPressed = true
                     }
                 }
                 .onEnded { _ in
-                    withAnimation(.spring(response: 0.25, dampingFraction: 0.7)) {
+                    withAnimation(.premiumSpring) {
                         isPressed = false
                     }
                 }
@@ -301,9 +312,19 @@ struct GlassIconButton: View {
         case .primary:
             ColorConstants.primary
         case .secondary, .glass:
-            Circle()
-                .fill(.ultraThinMaterial)
-        case .tertiary:
+            ZStack {
+                Circle()
+                    .fill(ColorConstants.Surface.card)
+                Circle()
+                    .fill(
+                        LinearGradient(
+                            colors: [Color.white.opacity(0.4), Color.clear],
+                            startPoint: .topLeading,
+                            endPoint: .center
+                        )
+                    )
+            }
+        case .tertiary, .outline:
             Color.clear
         case .destructive:
             ColorConstants.error
@@ -315,9 +336,12 @@ struct GlassIconButton: View {
     @ViewBuilder
     private var buttonBorder: some View {
         switch style {
-        case .secondary, .glass, .tertiary:
+        case .secondary, .glass:
             Circle()
-                .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                .stroke(ColorConstants.Border.standard, lineWidth: 1)
+        case .tertiary, .outline:
+            Circle()
+                .stroke(ColorConstants.primary.opacity(0.3), lineWidth: 1)
         default:
             EmptyView()
         }
@@ -346,28 +370,32 @@ struct FloatingActionButton: View {
         }) {
             HStack(spacing: 8) {
                 Image(systemName: icon)
-                    .font(.system(size: 20, weight: .semibold))
+                    .font(.system(size: 22, weight: .semibold))
 
                 if let label = label {
                     Text(label)
-                        .font(Typography.buttonSecondary)
+                        .font(Typography.buttonPrimary)
                 }
             }
             .foregroundStyle(.white)
-            .padding(.horizontal, label != nil ? 20 : 0)
-            .frame(width: label != nil ? nil : 56, height: 56)
+            .padding(.horizontal, label != nil ? 24 : 0)
+            .frame(width: label != nil ? nil : 60, height: 60)
             .background(
+                Capsule()
+                    .fill(ColorConstants.primary)
+            )
+            .overlay(
                 Capsule()
                     .fill(
                         LinearGradient(
-                            colors: [ColorConstants.primary, ColorConstants.secondary],
+                            colors: [Color.white.opacity(0.25), Color.clear],
                             startPoint: .topLeading,
-                            endPoint: .bottomTrailing
+                            endPoint: .center
                         )
                     )
             )
             .shadow(
-                color: ColorConstants.primary.opacity(0.4),
+                color: ColorConstants.primary.opacity(isPressed ? 0.2 : 0.4),
                 radius: isPressed ? 8 : 16,
                 x: 0,
                 y: isPressed ? 4 : 8
@@ -378,12 +406,12 @@ struct FloatingActionButton: View {
         .simultaneousGesture(
             DragGesture(minimumDistance: 0)
                 .onChanged { _ in
-                    withAnimation(.spring(response: 0.2, dampingFraction: 0.8)) {
+                    withAnimation(.quickResponse) {
                         isPressed = true
                     }
                 }
                 .onEnded { _ in
-                    withAnimation(.spring(response: 0.25, dampingFraction: 0.7)) {
+                    withAnimation(.premiumSpring) {
                         isPressed = false
                     }
                 }
@@ -391,53 +419,145 @@ struct FloatingActionButton: View {
     }
 }
 
+// MARK: - Segmented Control Button
+
+struct SegmentedButton: View {
+    let segments: [String]
+    @Binding var selectedIndex: Int
+
+    var body: some View {
+        HStack(spacing: 4) {
+            ForEach(Array(segments.enumerated()), id: \.offset) { index, segment in
+                Button {
+                    withAnimation(.premiumSpring) {
+                        selectedIndex = index
+                    }
+                    HapticManager.shared.selection()
+                } label: {
+                    Text(segment)
+                        .font(Typography.buttonSmall)
+                        .foregroundStyle(selectedIndex == index ? .white : ColorConstants.Text.secondary)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 10)
+                        .background(
+                            selectedIndex == index
+                                ? Capsule().fill(ColorConstants.primary)
+                                : Capsule().fill(Color.clear)
+                        )
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(4)
+        .background(
+            Capsule()
+                .fill(ColorConstants.Surface.grouped)
+        )
+        .overlay(
+            Capsule()
+                .stroke(ColorConstants.Border.standard, lineWidth: 0.5)
+        )
+    }
+}
+
 // MARK: - Preview
 
-#Preview("Glass Buttons") {
-    VStack(spacing: 24) {
-        // Primary buttons
-        VStack(spacing: 12) {
-            GlassButton("Primary Button", icon: "plus", style: .primary, action: {})
-            GlassButton("Full Width", icon: "car.fill", style: .primary, size: .fullWidth, action: {})
-            GlassButton("Loading", style: .primary, isLoading: true, action: {})
-        }
+#Preview("Premium Buttons") {
+    ScrollView {
+        VStack(spacing: 24) {
+            // Primary buttons
+            VStack(spacing: 12) {
+                Text("Primary Buttons")
+                    .font(Typography.headline)
+                    .frame(maxWidth: .infinity, alignment: .leading)
 
-        // Secondary buttons
-        HStack(spacing: 12) {
-            GlassButton("Secondary", style: .secondary, action: {})
-            GlassButton("Glass", icon: "star.fill", style: .glass, action: {})
-        }
+                GlassButton("Start Trip", icon: "car.fill", style: .primary, size: .fullWidth, action: {})
+                GlassButton("Loading", style: .primary, isLoading: true, action: {})
 
-        // Other styles
-        HStack(spacing: 12) {
-            GlassButton("Success", style: .success, size: .small, action: {})
-            GlassButton("Destructive", style: .destructive, size: .small, action: {})
-            GlassButton("Tertiary", style: .tertiary, size: .small, action: {})
-        }
+                HStack(spacing: 12) {
+                    GlassButton("Regular", style: .primary, action: {})
+                    GlassButton("Small", style: .primary, size: .small, action: {})
+                }
+            }
 
-        // Icon buttons
-        HStack(spacing: 16) {
-            GlassIconButton(icon: "plus", style: .primary, action: {})
-            GlassIconButton(icon: "heart.fill", style: .secondary, action: {})
-            GlassIconButton(icon: "trash", style: .destructive, size: 36, action: {})
-        }
+            Divider()
 
-        Spacer()
+            // Secondary buttons
+            VStack(spacing: 12) {
+                Text("Secondary Buttons")
+                    .font(Typography.headline)
+                    .frame(maxWidth: .infinity, alignment: .leading)
 
-        // FAB
-        HStack {
+                HStack(spacing: 12) {
+                    GlassButton("Secondary", style: .secondary, action: {})
+                    GlassButton("Glass", icon: "star.fill", style: .glass, action: {})
+                }
+
+                HStack(spacing: 12) {
+                    GlassButton("Tertiary", style: .tertiary, action: {})
+                    GlassButton("Outline", style: .outline, action: {})
+                }
+            }
+
+            Divider()
+
+            // Semantic buttons
+            VStack(spacing: 12) {
+                Text("Semantic Buttons")
+                    .font(Typography.headline)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                HStack(spacing: 12) {
+                    GlassButton("Success", icon: "checkmark", style: .success, size: .small, action: {})
+                    GlassButton("Destructive", icon: "trash", style: .destructive, size: .small, action: {})
+                }
+            }
+
+            Divider()
+
+            // Icon buttons
+            VStack(spacing: 12) {
+                Text("Icon Buttons")
+                    .font(Typography.headline)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                HStack(spacing: 16) {
+                    GlassIconButton(icon: "plus", style: .primary, action: {})
+                    GlassIconButton(icon: "heart.fill", style: .secondary, action: {})
+                    GlassIconButton(icon: "bell.fill", style: .glass, action: {})
+                    GlassIconButton(icon: "trash", style: .destructive, size: 40, action: {})
+                }
+            }
+
+            Divider()
+
+            // Segmented control
+            VStack(spacing: 12) {
+                Text("Segmented Control")
+                    .font(Typography.headline)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                SegmentedButton(
+                    segments: ["Day", "Week", "Month"],
+                    selectedIndex: .constant(1)
+                )
+            }
+
             Spacer()
-            FloatingActionButton(icon: "plus", action: {})
+
+            // FAB
+            HStack {
+                Spacer()
+                FloatingActionButton(icon: "plus", action: {})
+            }
         }
         .padding()
     }
-    .padding()
-    .background(Color(uiColor: .systemGroupedBackground))
+    .background(ColorConstants.Surface.grouped)
 }
 
 // MARK: - Glass Button Style Modifier
 
-/// A ButtonStyle that applies glass morphic styling to any button
 struct GlassButtonStyleModifier: ButtonStyle {
     let style: GlassButtonStyle
 
@@ -450,45 +570,38 @@ struct GlassButtonStyleModifier: ButtonStyle {
             .font(Typography.headline)
             .foregroundStyle(style.foregroundColor)
             .padding(.horizontal, 20)
-            .padding(.vertical, 12)
+            .padding(.vertical, 14)
             .background(backgroundView)
-            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
-            .animation(.easeInOut(duration: 0.1), value: configuration.isPressed)
+            .clipShape(RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous))
+            .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
+            .animation(.quickResponse, value: configuration.isPressed)
     }
 
     @ViewBuilder
     private var backgroundView: some View {
         switch style {
         case .primary:
-            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
-                .fill(ColorConstants.primary)
+            ColorConstants.primary
         case .secondary, .glass:
-            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
-                .fill(.ultraThinMaterial)
-        case .tertiary:
-            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
-                .fill(Color.clear)
+            ColorConstants.Surface.card
+        case .tertiary, .outline:
+            Color.clear
         case .destructive:
-            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
-                .fill(ColorConstants.error)
+            ColorConstants.error
         case .success:
-            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
-                .fill(ColorConstants.success)
+            ColorConstants.success
         }
     }
 }
 
-/// Extension to use with .buttonStyle modifier
 extension View {
     func glassButtonStyle(_ style: GlassButtonStyle = .primary) -> some View {
         self.buttonStyle(GlassButtonStyleModifier(style))
     }
 }
 
-// MARK: - Glass Button Style Wrapper for .buttonStyle() usage
+// MARK: - Button Style Wrapper
 
-/// ButtonStyle wrapper that matches `.buttonStyle(GlassButtonStyle())` pattern
-/// This allows using GlassButtonStyle as a ButtonStyle conforming type
 struct GlassButtonStyleWrapper: ButtonStyle {
     enum Variant {
         case primary
@@ -507,12 +620,13 @@ struct GlassButtonStyleWrapper: ButtonStyle {
             .font(Typography.buttonSecondary)
             .fontWeight(.semibold)
             .foregroundStyle(foregroundColor)
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
+            .padding(.horizontal, 20)
+            .padding(.vertical, 14)
             .background(backgroundView)
             .clipShape(RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous))
+            .overlay(borderView)
             .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
-            .animation(.easeInOut(duration: 0.1), value: configuration.isPressed)
+            .animation(.quickResponse, value: configuration.isPressed)
     }
 
     private var foregroundColor: Color {
@@ -528,25 +642,22 @@ struct GlassButtonStyleWrapper: ButtonStyle {
     private var backgroundView: some View {
         switch variant {
         case .primary:
-            LinearGradient(
-                colors: [ColorConstants.primary, ColorConstants.primary.opacity(0.9)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
+            ColorConstants.primary
+        case .secondary:
+            ColorConstants.Surface.card
+        case .destructive:
+            ColorConstants.error
+        }
+    }
+
+    @ViewBuilder
+    private var borderView: some View {
+        switch variant {
         case .secondary:
             RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
-                .fill(.ultraThinMaterial)
-                .overlay(
-                    RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
-                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
-                )
-        case .destructive:
-            LinearGradient(
-                colors: [ColorConstants.error, ColorConstants.error.opacity(0.9)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
+                .stroke(ColorConstants.Border.standard, lineWidth: 1)
+        default:
+            EmptyView()
         }
     }
 }
-

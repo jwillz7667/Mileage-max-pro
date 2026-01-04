@@ -144,6 +144,11 @@ final class DashboardViewModel: ObservableObject {
     }
 
     private func fetchDashboardData() async throws -> DashboardData {
+        // Only fetch from API if authenticated
+        guard AuthenticationService.shared.authState == .authenticated else {
+            return computeLocalDashboardData()
+        }
+
         let endpoint = AnalyticsEndpoints.dashboard(period: selectedPeriod)
         let response: DashboardResponse = try await apiClient.request(endpoint)
         return DashboardData(from: response)
@@ -253,12 +258,24 @@ final class DashboardViewModel: ObservableObject {
     // MARK: - Actions
 
     func startTrip(vehicleId: UUID) {
-        guard let location = locationService.currentLocation else {
-            AppLogger.trip.error("Cannot start trip: location unavailable")
-            return
+        // Ensure location monitoring is active
+        if !locationService.trackingState.isActive {
+            locationService.startMonitoring()
         }
 
+        // Check for current location - if not available yet, try to start anyway
+        // LocationTrackingService.startTrip will handle the error case
         Task {
+            // Give location manager a moment to get a fix if needed
+            if locationService.currentLocation == nil {
+                try? await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds
+            }
+
+            guard let location = locationService.currentLocation else {
+                AppLogger.trip.error("Cannot start trip: location unavailable")
+                return
+            }
+
             let address = await locationService.reverseGeocode(location: location)
             locationService.startTrip(vehicleId: vehicleId, startAddress: address)
         }
@@ -289,6 +306,12 @@ final class DashboardViewModel: ObservableObject {
     }
 
     private func syncTrip(_ trip: Trip) async {
+        // Only sync if authenticated
+        guard AuthenticationService.shared.authState == .authenticated else {
+            trip.syncStatus = .pending
+            return
+        }
+
         // Create API request
         let request = CreateTripRequest(
             startLatitude: trip.startLatitude,

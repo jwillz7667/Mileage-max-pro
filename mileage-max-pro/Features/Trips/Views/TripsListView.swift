@@ -213,7 +213,7 @@ private struct TripsListContentView: View {
     }
 }
 
-// MARK: - Summary Header
+// MARK: - Premium Summary Header
 
 struct TripsSummaryHeader: View {
     let totalMiles: Double
@@ -223,48 +223,62 @@ struct TripsSummaryHeader: View {
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: Spacing.md) {
-                SummaryChip(
+            HStack(spacing: Spacing.sm) {
+                PremiumSummaryChip(
                     icon: "road.lanes",
                     value: totalMiles.formatted(.number.precision(.fractionLength(1))),
-                    label: "Total Miles"
+                    label: "Total Miles",
+                    color: ColorConstants.primary
                 )
 
-                SummaryChip(
+                PremiumSummaryChip(
                     icon: "briefcase.fill",
                     value: businessMiles.formatted(.number.precision(.fractionLength(1))),
-                    label: "Business"
+                    label: "Business",
+                    color: ColorConstants.TripCategory.business
                 )
 
-                SummaryChip(
-                    icon: "number",
+                PremiumSummaryChip(
+                    icon: "location.fill",
                     value: "\(tripCount)",
-                    label: "Trips"
+                    label: "Trips",
+                    color: ColorConstants.success
                 )
 
-                SummaryChip(
+                PremiumSummaryChip(
                     icon: "dollarsign.circle.fill",
                     value: deduction.asCurrency(),
-                    label: "Deduction"
+                    label: "Deduction",
+                    color: ColorConstants.warning
                 )
             }
             .padding(.horizontal)
             .padding(.vertical, Spacing.sm)
         }
-        .background(.ultraThinMaterial)
+        .background(
+            ColorConstants.Surface.card
+                .shadow(color: ColorConstants.Neomorphic.darkShadow, radius: 4, x: 0, y: 2)
+        )
     }
 }
 
-struct SummaryChip: View {
+struct PremiumSummaryChip: View {
     let icon: String
     let value: String
     let label: String
+    let color: Color
 
     var body: some View {
         HStack(spacing: Spacing.sm) {
-            Image(systemName: icon)
-                .font(.system(size: 14, weight: .medium))
-                .foregroundStyle(ColorConstants.primary)
+            ZStack {
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill(color.opacity(0.12))
+                    .frame(width: 32, height: 32)
+
+                Image(systemName: icon)
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(color)
+            }
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(value)
@@ -277,20 +291,20 @@ struct SummaryChip: View {
                     .foregroundStyle(ColorConstants.Text.tertiary)
             }
         }
-        .padding(.horizontal, Spacing.md)
+        .padding(.horizontal, Spacing.sm)
         .padding(.vertical, Spacing.sm)
         .background(
             RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
-                .fill(.ultraThinMaterial)
+                .fill(ColorConstants.Surface.elevated)
         )
         .overlay(
             RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
-                .stroke(Color.white.opacity(0.1), lineWidth: 1)
+                .stroke(ColorConstants.Border.standard, lineWidth: 0.5)
         )
     }
 }
 
-// MARK: - Date Section Header
+// MARK: - Premium Date Section Header
 
 struct DateSectionHeader: View {
     let date: Date
@@ -301,16 +315,25 @@ struct DateSectionHeader: View {
             Text(date.sectionHeaderFormatted)
                 .font(Typography.subheadlineBold)
                 .foregroundStyle(ColorConstants.Text.secondary)
+                .textCase(.uppercase)
+                .tracking(0.5)
 
             Spacer()
 
             Text("\(tripCount) trips")
                 .font(Typography.caption1)
+                .fontWeight(.medium)
                 .foregroundStyle(ColorConstants.Text.tertiary)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 4)
+                .background(
+                    Capsule()
+                        .fill(ColorConstants.Surface.elevated)
+                )
         }
         .padding(.horizontal, Spacing.xs)
-        .padding(.vertical, Spacing.xs)
-        .background(.ultraThinMaterial)
+        .padding(.vertical, Spacing.sm)
+        .background(ColorConstants.Surface.grouped.opacity(0.95))
     }
 }
 
@@ -357,7 +380,7 @@ struct TripRowView: View {
             } label: {
                 Label("Business", systemImage: "briefcase")
             }
-            .tint(.green)
+            .tint(ColorConstants.success)
         }
     }
 }

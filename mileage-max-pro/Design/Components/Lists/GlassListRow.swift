@@ -3,11 +3,12 @@
 //  MileageMaxPro
 //
 //  Enterprise iOS Mileage Tracking Application
+//  Premium List Components - iOS 26 Liquid Glass
 //
 
 import SwiftUI
 
-/// Glass-styled list row with Liquid Glass effect
+/// Premium glass-styled list row with Liquid Glass effect
 struct GlassListRow<LeadingContent: View, TrailingContent: View>: View {
     let title: String
     let subtitle: String?
@@ -62,19 +63,33 @@ struct GlassListRow<LeadingContent: View, TrailingContent: View>: View {
 
                 if showChevron && action != nil {
                     Image(systemName: "chevron.right")
-                        .font(.system(size: 12, weight: .semibold))
-                        .foregroundStyle(ColorConstants.Text.tertiary)
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundStyle(ColorConstants.Text.quaternary)
                 }
             }
             .padding(Spacing.cardInsets)
             .background(
-                RoundedRectangle(cornerRadius: AppTheme.cornerRadiusCard, style: .continuous)
-                    .fill(.ultraThinMaterial)
-                    .opacity(isPressed ? 0.8 : 1)
+                ZStack {
+                    // Base card background
+                    RoundedRectangle(cornerRadius: AppTheme.cornerRadiusCard, style: .continuous)
+                        .fill(ColorConstants.Surface.card)
+
+                    // Pressed state overlay
+                    if isPressed {
+                        RoundedRectangle(cornerRadius: AppTheme.cornerRadiusCard, style: .continuous)
+                            .fill(ColorConstants.primary.opacity(0.05))
+                    }
+                }
             )
             .overlay(
                 RoundedRectangle(cornerRadius: AppTheme.cornerRadiusCard, style: .continuous)
-                    .stroke(Color.white.opacity(0.1), lineWidth: 1)
+                    .stroke(ColorConstants.Border.standard, lineWidth: 0.5)
+            )
+            .shadow(
+                color: ColorConstants.Neomorphic.darkShadow,
+                radius: isPressed ? 2 : 4,
+                x: 0,
+                y: isPressed ? 1 : 2
             )
             .scaleEffect(isPressed ? 0.98 : 1)
         }
@@ -84,12 +99,12 @@ struct GlassListRow<LeadingContent: View, TrailingContent: View>: View {
             DragGesture(minimumDistance: 0)
                 .onChanged { _ in
                     guard action != nil else { return }
-                    withAnimation(.easeOut(duration: 0.1)) {
+                    withAnimation(.quickResponse) {
                         isPressed = true
                     }
                 }
                 .onEnded { _ in
-                    withAnimation(.spring(response: 0.2, dampingFraction: 0.7)) {
+                    withAnimation(.premiumSpring) {
                         isPressed = false
                     }
                 }
@@ -97,33 +112,79 @@ struct GlassListRow<LeadingContent: View, TrailingContent: View>: View {
     }
 }
 
-// MARK: - Icon Leading View
+// MARK: - Premium Icon Leading View
 
 struct IconLeadingView: View {
     let icon: String
     let color: Color
     let size: CGFloat
+    let style: IconStyle
 
-    init(icon: String, color: Color = ColorConstants.primary, size: CGFloat = 36) {
+    enum IconStyle {
+        case filled
+        case gradient
+        case outline
+        case neomorphic
+    }
+
+    init(
+        icon: String,
+        color: Color = ColorConstants.primary,
+        size: CGFloat = 40,
+        style: IconStyle = .filled
+    ) {
         self.icon = icon
         self.color = color
         self.size = size
+        self.style = style
     }
 
     var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: size * 0.25, style: .continuous)
-                .fill(color.opacity(0.15))
-                .frame(width: size, height: size)
+            switch style {
+            case .filled:
+                RoundedRectangle(cornerRadius: size * 0.25, style: .continuous)
+                    .fill(color.opacity(0.12))
+                    .frame(width: size, height: size)
 
-            Image(systemName: icon)
-                .font(.system(size: size * 0.45, weight: .semibold))
-                .foregroundStyle(color)
+                Image(systemName: icon)
+                    .font(.system(size: size * 0.45, weight: .semibold))
+                    .foregroundStyle(color)
+
+            case .gradient:
+                RoundedRectangle(cornerRadius: size * 0.25, style: .continuous)
+                    .fill(color.gradient)
+                    .frame(width: size, height: size)
+
+                Image(systemName: icon)
+                    .font(.system(size: size * 0.45, weight: .semibold))
+                    .foregroundStyle(.white)
+
+            case .outline:
+                RoundedRectangle(cornerRadius: size * 0.25, style: .continuous)
+                    .stroke(color.opacity(0.3), lineWidth: 1.5)
+                    .frame(width: size, height: size)
+
+                Image(systemName: icon)
+                    .font(.system(size: size * 0.45, weight: .semibold))
+                    .foregroundStyle(color)
+
+            case .neomorphic:
+                RoundedRectangle(cornerRadius: size * 0.25, style: .continuous)
+                    .fill(ColorConstants.Surface.card)
+                    .frame(width: size, height: size)
+                    .shadow(color: ColorConstants.Neomorphic.lightShadow, radius: 2, x: -1, y: -1)
+                    .shadow(color: ColorConstants.Neomorphic.darkShadow, radius: 2, x: 1, y: 1)
+
+                Image(systemName: icon)
+                    .font(.system(size: size * 0.45, weight: .semibold))
+                    .foregroundStyle(color)
+            }
         }
     }
 }
 
-// MARK: - Trip List Row
+// MARK: - Premium Trip List Row
 
 struct TripListRow: View {
     let startLocation: String
@@ -141,26 +202,38 @@ struct TripListRow: View {
             leading: {
                 IconLeadingView(
                     icon: category.icon,
-                    color: category.color
+                    color: category.color,
+                    size: 44,
+                    style: .filled
                 )
             },
             trailing: {
-                Text(category.rawValue)
-                    .font(Typography.caption2)
-                    .fontWeight(.medium)
-                    .foregroundStyle(category.color)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(
-                        Capsule()
-                            .fill(category.color.opacity(0.15))
-                    )
+                PremiumCategoryBadge(category: category)
             }
         )
     }
 }
 
-// MARK: - Vehicle List Row
+// MARK: - Trip Category Badge (Premium)
+
+struct PremiumCategoryBadge: View {
+    let category: TripCategory
+
+    var body: some View {
+        Text(category.rawValue)
+            .font(Typography.caption2)
+            .fontWeight(.semibold)
+            .foregroundStyle(category.color)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 5)
+            .background(
+                Capsule()
+                    .fill(category.color.opacity(0.12))
+            )
+    }
+}
+
+// MARK: - Premium Vehicle List Row
 
 struct VehicleListRow: View {
     let name: String
@@ -177,21 +250,27 @@ struct VehicleListRow: View {
             leading: {
                 IconLeadingView(
                     icon: "car.fill",
-                    color: isActive ? ColorConstants.primary : ColorConstants.Text.tertiary
+                    color: isActive ? ColorConstants.primary : ColorConstants.Text.tertiary,
+                    size: 44,
+                    style: isActive ? .gradient : .filled
                 )
             },
             trailing: {
-                VStack(alignment: .trailing, spacing: 2) {
+                VStack(alignment: .trailing, spacing: 3) {
                     Text(odometer)
-                        .font(Typography.caption1)
-                        .fontWeight(.medium)
+                        .font(Typography.subheadlineBold)
                         .foregroundStyle(ColorConstants.Text.primary)
                         .monospacedDigit()
 
                     if isActive {
-                        Text("Active")
-                            .font(Typography.caption2)
-                            .foregroundStyle(ColorConstants.success)
+                        HStack(spacing: 4) {
+                            Circle()
+                                .fill(ColorConstants.success)
+                                .frame(width: 6, height: 6)
+                            Text("Active")
+                                .font(Typography.caption2)
+                                .foregroundStyle(ColorConstants.success)
+                        }
                     }
                 }
             }
@@ -199,7 +278,7 @@ struct VehicleListRow: View {
     }
 }
 
-// MARK: - Expense List Row
+// MARK: - Premium Expense List Row
 
 struct ExpenseListRow: View {
     let title: String
@@ -216,11 +295,11 @@ struct ExpenseListRow: View {
             subtitle: "\(category) • \(date)",
             action: action,
             leading: {
-                IconLeadingView(icon: icon, color: iconColor)
+                IconLeadingView(icon: icon, color: iconColor, size: 44, style: .filled)
             },
             trailing: {
                 Text(amount)
-                    .font(Typography.bodyBold)
+                    .font(Typography.headline)
                     .foregroundStyle(ColorConstants.Text.primary)
                     .monospacedDigit()
             }
@@ -228,7 +307,7 @@ struct ExpenseListRow: View {
     }
 }
 
-// MARK: - Settings Row
+// MARK: - Premium Settings Row
 
 struct SettingsRow: View {
     let title: String
@@ -264,15 +343,12 @@ struct SettingsRow: View {
             showChevron: showChevron,
             action: action,
             leading: {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 8, style: .continuous)
-                        .fill(iconColor.gradient)
-                        .frame(width: 32, height: 32)
-
-                    Image(systemName: icon)
-                        .font(.system(size: 15, weight: .semibold))
-                        .foregroundStyle(.white)
-                }
+                IconLeadingView(
+                    icon: icon,
+                    color: iconColor,
+                    size: 36,
+                    style: .gradient
+                )
             },
             trailing: {
                 if let value = value {
@@ -285,7 +361,7 @@ struct SettingsRow: View {
     }
 }
 
-// MARK: - Settings Toggle Row
+// MARK: - Premium Settings Toggle Row
 
 struct SettingsToggleRow: View {
     let title: String
@@ -310,15 +386,12 @@ struct SettingsToggleRow: View {
 
     var body: some View {
         HStack(spacing: Spacing.md) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .fill(iconColor.gradient)
-                    .frame(width: 32, height: 32)
-
-                Image(systemName: icon)
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(.white)
-            }
+            IconLeadingView(
+                icon: icon,
+                color: iconColor,
+                size: 36,
+                style: .gradient
+            )
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
@@ -339,16 +412,22 @@ struct SettingsToggleRow: View {
         .padding(Spacing.cardInsets)
         .background(
             RoundedRectangle(cornerRadius: AppTheme.cornerRadiusCard, style: .continuous)
-                .fill(.ultraThinMaterial)
+                .fill(ColorConstants.Surface.card)
         )
         .overlay(
             RoundedRectangle(cornerRadius: AppTheme.cornerRadiusCard, style: .continuous)
-                .stroke(Color.white.opacity(0.1), lineWidth: 1)
+                .stroke(ColorConstants.Border.standard, lineWidth: 0.5)
+        )
+        .shadow(
+            color: ColorConstants.Neomorphic.darkShadow,
+            radius: 4,
+            x: 0,
+            y: 2
         )
     }
 }
 
-// MARK: - Section Header
+// MARK: - Premium Section Header
 
 struct GlassSectionHeader: View {
     let title: String
@@ -366,16 +445,23 @@ struct GlassSectionHeader: View {
             Text(title)
                 .font(Typography.subheadlineBold)
                 .foregroundStyle(ColorConstants.Text.secondary)
+                .textCase(.uppercase)
+                .tracking(0.5)
 
             Spacer()
 
             if let actionTitle = actionTitle, let action = action {
                 Button {
+                    HapticManager.shared.lightImpact()
                     action()
                 } label: {
-                    Text(actionTitle)
-                        .font(Typography.subheadline)
-                        .foregroundStyle(ColorConstants.primary)
+                    HStack(spacing: 4) {
+                        Text(actionTitle)
+                            .font(Typography.subheadlineBold)
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 10, weight: .bold))
+                    }
+                    .foregroundStyle(ColorConstants.primary)
                 }
             }
         }
@@ -383,87 +469,183 @@ struct GlassSectionHeader: View {
     }
 }
 
+// MARK: - Grouped List Container
+
+struct GlassListSection<Content: View>: View {
+    let header: String?
+    let footer: String?
+    let content: Content
+
+    init(
+        header: String? = nil,
+        footer: String? = nil,
+        @ViewBuilder content: () -> Content
+    ) {
+        self.header = header
+        self.footer = footer
+        self.content = content()
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: Spacing.sm) {
+            if let header = header {
+                GlassSectionHeader(header)
+            }
+
+            VStack(spacing: Spacing.sm) {
+                content
+            }
+
+            if let footer = footer {
+                Text(footer)
+                    .font(Typography.caption1)
+                    .foregroundStyle(ColorConstants.Text.tertiary)
+                    .padding(.horizontal, Spacing.xs)
+            }
+        }
+    }
+}
+
+// MARK: - Inline List Row (No Card Background)
+
+struct InlineListRow: View {
+    let title: String
+    let value: String?
+    let icon: String?
+    let iconColor: Color
+    let action: (() -> Void)?
+
+    init(
+        title: String,
+        value: String? = nil,
+        icon: String? = nil,
+        iconColor: Color = ColorConstants.primary,
+        action: (() -> Void)? = nil
+    ) {
+        self.title = title
+        self.value = value
+        self.icon = icon
+        self.iconColor = iconColor
+        self.action = action
+    }
+
+    var body: some View {
+        Button {
+            HapticManager.shared.lightImpact()
+            action?()
+        } label: {
+            HStack(spacing: Spacing.sm) {
+                if let icon = icon {
+                    Image(systemName: icon)
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundStyle(iconColor)
+                        .frame(width: 24)
+                }
+
+                Text(title)
+                    .font(Typography.body)
+                    .foregroundStyle(ColorConstants.Text.primary)
+
+                Spacer()
+
+                if let value = value {
+                    Text(value)
+                        .font(Typography.body)
+                        .foregroundStyle(ColorConstants.Text.secondary)
+                }
+
+                if action != nil {
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundStyle(ColorConstants.Text.quaternary)
+                }
+            }
+            .padding(.vertical, Spacing.sm)
+        }
+        .buttonStyle(.plain)
+        .disabled(action == nil)
+    }
+}
+
 // MARK: - Preview
 
-#Preview("Glass List Rows") {
+#Preview("Premium Glass List Rows") {
     ScrollView {
-        VStack(spacing: Spacing.md) {
+        VStack(spacing: Spacing.lg) {
             // Section: Trips
-            GlassSectionHeader("Recent Trips", actionTitle: "See All") {}
+            GlassListSection(header: "Recent Trips") {
+                TripListRow(
+                    startLocation: "Home",
+                    endLocation: "Office",
+                    distance: "12.5 mi",
+                    date: "Today, 8:30 AM",
+                    category: .business,
+                    action: {}
+                )
 
-            TripListRow(
-                startLocation: "Home",
-                endLocation: "Office",
-                distance: "12.5 mi",
-                date: "Today, 8:30 AM",
-                category: .business,
-                action: {}
-            )
-
-            TripListRow(
-                startLocation: "Office",
-                endLocation: "Client Meeting",
-                distance: "8.2 mi",
-                date: "Today, 2:15 PM",
-                category: .business,
-                action: {}
-            )
+                TripListRow(
+                    startLocation: "Office",
+                    endLocation: "Client Meeting",
+                    distance: "8.2 mi",
+                    date: "Today, 2:15 PM",
+                    category: .business,
+                    action: {}
+                )
+            }
 
             // Section: Vehicles
-            GlassSectionHeader("My Vehicles")
-                .padding(.top, Spacing.md)
+            GlassListSection(header: "My Vehicles") {
+                VehicleListRow(
+                    name: "Tesla Model 3",
+                    details: "2023 • Electric",
+                    odometer: "12,345 mi",
+                    isActive: true,
+                    action: {}
+                )
 
-            VehicleListRow(
-                name: "Tesla Model 3",
-                details: "2023 • Electric",
-                odometer: "12,345 mi",
-                isActive: true,
-                action: {}
-            )
-
-            VehicleListRow(
-                name: "Honda Civic",
-                details: "2020 • Gasoline",
-                odometer: "45,678 mi",
-                isActive: false,
-                action: {}
-            )
+                VehicleListRow(
+                    name: "Honda Civic",
+                    details: "2020 • Gasoline",
+                    odometer: "45,678 mi",
+                    isActive: false,
+                    action: {}
+                )
+            }
 
             // Section: Expenses
-            GlassSectionHeader("Recent Expenses")
-                .padding(.top, Spacing.md)
-
-            ExpenseListRow(
-                title: "Shell Gas Station",
-                category: "Fuel",
-                amount: "$45.23",
-                date: "Dec 15",
-                icon: "fuelpump.fill",
-                iconColor: .orange,
-                action: {}
-            )
+            GlassListSection(header: "Recent Expenses") {
+                ExpenseListRow(
+                    title: "Shell Gas Station",
+                    category: "Fuel",
+                    amount: "$45.23",
+                    date: "Dec 15",
+                    icon: "fuelpump.fill",
+                    iconColor: ColorConstants.warning,
+                    action: {}
+                )
+            }
 
             // Section: Settings
-            GlassSectionHeader("Settings")
-                .padding(.top, Spacing.md)
+            GlassListSection(header: "Settings", footer: "Configure your tracking preferences") {
+                SettingsRow(
+                    title: "Auto-Tracking",
+                    subtitle: "Detect trips automatically",
+                    icon: "location.fill",
+                    iconColor: ColorConstants.primary,
+                    value: "On",
+                    action: {}
+                )
 
-            SettingsRow(
-                title: "Auto-Tracking",
-                subtitle: "Detect trips automatically",
-                icon: "location.fill",
-                iconColor: .blue,
-                value: "On",
-                action: {}
-            )
-
-            SettingsToggleRow(
-                title: "Dark Mode",
-                icon: "moon.fill",
-                iconColor: .purple,
-                isOn: .constant(true)
-            )
+                SettingsToggleRow(
+                    title: "Dark Mode",
+                    subtitle: "Use dark theme",
+                    icon: "moon.fill",
+                    iconColor: .purple,
+                    isOn: .constant(true)
+                )
+            }
         }
         .padding()
     }
-    .background(Color(uiColor: .systemGroupedBackground))
+    .background(ColorConstants.Surface.grouped)
 }

@@ -17,7 +17,7 @@ struct SettingsView: View {
 
     @AppStorage("autoStartTrips") private var autoStartTrips = false
     @AppStorage("autoEndTrips") private var autoEndTrips = false
-    @AppStorage("defaultCategory") private var defaultCategory = "Business"
+    @AppStorage("defaultCategory") private var defaultCategory = "business"
     @AppStorage("distanceUnit") private var distanceUnit = "miles"
     @AppStorage("enableNotifications") private var enableNotifications = true
     @AppStorage("darkMode") private var darkMode = false
@@ -104,34 +104,38 @@ struct SettingsView: View {
         }
     }
 
-    // MARK: - Account Section
+    // MARK: - Premium Account Section
 
     private var accountSection: some View {
         Section {
             NavigationLink {
                 AccountSettingsView()
             } label: {
-                HStack(spacing: 16) {
+                HStack(spacing: Spacing.md) {
                     ZStack {
                         Circle()
-                            .fill(LinearGradient(
-                                colors: [.blue, .purple],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            ))
+                            .fill(
+                                LinearGradient(
+                                    colors: [ColorConstants.primary, ColorConstants.primary.opacity(0.7)],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
                             .frame(width: 50, height: 50)
+                            .shadow(color: ColorConstants.primary.opacity(0.3), radius: 6, x: 0, y: 3)
 
                         Text("JD")
-                            .font(.headline)
+                            .font(Typography.headline)
                             .foregroundStyle(.white)
                     }
 
                     VStack(alignment: .leading, spacing: 2) {
                         Text("John Doe")
-                            .font(.headline)
+                            .font(Typography.headline)
+                            .foregroundStyle(ColorConstants.Text.primary)
                         Text("john@example.com")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .font(Typography.caption1)
+                            .foregroundStyle(ColorConstants.Text.secondary)
                     }
                 }
                 .padding(.vertical, 4)
@@ -142,14 +146,15 @@ struct SettingsView: View {
             } label: {
                 HStack {
                     Label("Subscription", systemImage: "crown.fill")
-                        .foregroundStyle(.orange)
+                        .foregroundStyle(ColorConstants.warning)
                     Spacer()
                     Text("Pro")
-                        .font(.caption)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(Color.orange.opacity(0.15))
-                        .foregroundStyle(.orange)
+                        .font(Typography.caption1)
+                        .fontWeight(.semibold)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
+                        .background(ColorConstants.warning.opacity(0.15))
+                        .foregroundStyle(ColorConstants.warning)
                         .clipShape(Capsule())
                 }
             }
@@ -559,14 +564,25 @@ struct FeatureRow: View {
     let text: String
 
     var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: icon)
-                .foregroundStyle(.blue)
-                .frame(width: 24)
+        HStack(spacing: Spacing.sm) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill(ColorConstants.primary.opacity(0.12))
+                    .frame(width: 32, height: 32)
+
+                Image(systemName: icon)
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(ColorConstants.primary)
+            }
+
             Text(text)
+                .font(Typography.body)
+                .foregroundStyle(ColorConstants.Text.primary)
+
             Spacer()
-            Image(systemName: "checkmark")
-                .foregroundStyle(.green)
+
+            Image(systemName: "checkmark.circle.fill")
+                .foregroundStyle(ColorConstants.success)
         }
     }
 }

@@ -114,7 +114,7 @@ private struct RoutesListContentView: View {
                                 } label: {
                                     Label("Start", systemImage: "play.fill")
                                 }
-                                .tint(.green)
+                                .tint(ColorConstants.success)
                             }
                         }
                     }
@@ -248,10 +248,10 @@ struct RouteRowView: View {
 
     private var statusColor: Color {
         switch route.status {
-        case .planned: return .blue
-        case .inProgress: return .green
-        case .completed: return .gray
-        case .canceled: return .red
+        case .planned: return ColorConstants.primary
+        case .inProgress: return ColorConstants.success
+        case .completed: return ColorConstants.secondary
+        case .canceled: return ColorConstants.error
         }
     }
 
@@ -283,10 +283,10 @@ struct StatusChip: View {
 
     private var statusColor: Color {
         switch status {
-        case .planned: return .blue
-        case .inProgress: return .green
-        case .completed: return .gray
-        case .canceled: return .red
+        case .planned: return ColorConstants.primary
+        case .inProgress: return ColorConstants.success
+        case .completed: return ColorConstants.secondary
+        case .canceled: return ColorConstants.error
         }
     }
 }
@@ -460,19 +460,19 @@ struct RoutePreviewMap: View {
                 Annotation("\(index + 1)", coordinate: stop.coordinate) {
                     ZStack {
                         Circle()
-                            .fill(.blue)
+                            .fill(ColorConstants.Map.route)
                             .frame(width: 28, height: 28)
                         Text("\(index + 1)")
                             .font(.caption)
                             .fontWeight(.bold)
-                            .foregroundStyle(.white)
+                            .foregroundStyle(ColorConstants.Text.inverse)
                     }
                 }
             }
 
             if stops.count > 1 {
                 MapPolyline(coordinates: stops.map { $0.coordinate })
-                    .stroke(.blue, lineWidth: 3)
+                    .stroke(ColorConstants.Map.route, lineWidth: 3)
             }
         }
         .mapStyle(.standard(elevation: .realistic, pointsOfInterest: .excludingAll))
@@ -519,7 +519,7 @@ struct AddStopSheet: View {
                     }
                 }
                 .padding()
-                .background(Color(.secondarySystemBackground))
+                .background(ColorConstants.Surface.secondaryGrouped)
 
                 if let selected = selectedItem {
                     // Selected location details

@@ -202,7 +202,7 @@ private struct ReportsContentView: View {
 
                     Image(systemName: "checkmark.circle.fill")
                         .font(.title2)
-                        .foregroundStyle(.green)
+                        .foregroundStyle(ColorConstants.success)
                 }
 
                 Divider()
@@ -269,24 +269,24 @@ struct ReportTypeCard: View {
             VStack(spacing: 12) {
                 Image(systemName: type.icon)
                     .font(.title2)
-                    .foregroundStyle(isSelected ? .white : .blue)
+                    .foregroundStyle(isSelected ? ColorConstants.Text.inverse : ColorConstants.primary)
 
                 VStack(spacing: 4) {
                     Text(type.rawValue)
                         .font(.subheadline)
                         .fontWeight(.medium)
-                        .foregroundStyle(isSelected ? .white : .primary)
+                        .foregroundStyle(isSelected ? ColorConstants.Text.inverse : ColorConstants.Text.primary)
 
                     Text(type.description)
                         .font(.caption2)
-                        .foregroundStyle(isSelected ? .white.opacity(0.8) : .secondary)
+                        .foregroundStyle(isSelected ? ColorConstants.Text.inverse.opacity(0.8) : ColorConstants.Text.secondary)
                         .lineLimit(2)
                         .multilineTextAlignment(.center)
                 }
             }
             .frame(maxWidth: .infinity)
             .padding()
-            .background(isSelected ? Color.blue : Color(.secondarySystemGroupedBackground))
+            .background(isSelected ? ColorConstants.primary : ColorConstants.Surface.secondaryGrouped)
             .clipShape(RoundedRectangle(cornerRadius: 12))
         }
         .buttonStyle(.plain)
@@ -415,7 +415,7 @@ struct TaxSummaryView: View {
                                 Text(data.totalDeduction, format: .currency(code: "USD"))
                                     .font(.largeTitle)
                                     .fontWeight(.bold)
-                                    .foregroundStyle(.green)
+                                    .foregroundStyle(ColorConstants.success)
                             }
                         }
                         .padding()
@@ -623,7 +623,7 @@ struct TaxLineItem: View {
                 Spacer()
                 Text(deduction, format: .currency(code: "USD"))
                     .fontWeight(.semibold)
-                    .foregroundStyle(.green)
+                    .foregroundStyle(ColorConstants.success)
             }
 
             HStack {

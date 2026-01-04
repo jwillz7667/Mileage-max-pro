@@ -51,7 +51,7 @@ struct TripDetailView: View {
             }
             .padding()
         }
-        .background(Color(.systemGroupedBackground))
+        .background(ColorConstants.Surface.grouped)
         .navigationTitle("Trip Details")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -223,10 +223,10 @@ struct TripDetailView: View {
                 HStack(alignment: .top, spacing: 12) {
                     ZStack {
                         Circle()
-                            .fill(Color.green.opacity(0.2))
+                            .fill(ColorConstants.success.opacity(0.2))
                             .frame(width: 32, height: 32)
                         Circle()
-                            .fill(Color.green)
+                            .fill(ColorConstants.success)
                             .frame(width: 12, height: 12)
                     }
 
@@ -243,7 +243,7 @@ struct TripDetailView: View {
 
                 // Connector Line
                 Rectangle()
-                    .fill(Color.secondary.opacity(0.3))
+                    .fill(ColorConstants.Border.standard)
                     .frame(width: 2, height: 24)
                     .padding(.leading, 15)
 
@@ -251,10 +251,10 @@ struct TripDetailView: View {
                 HStack(alignment: .top, spacing: 12) {
                     ZStack {
                         Circle()
-                            .fill(Color.red.opacity(0.2))
+                            .fill(ColorConstants.error.opacity(0.2))
                             .frame(width: 32, height: 32)
                         Circle()
-                            .fill(Color.red)
+                            .fill(ColorConstants.error)
                             .frame(width: 12, height: 12)
                     }
 
@@ -420,11 +420,11 @@ struct TripDetailView: View {
     private var syncStatusColor: Color {
         switch trip.syncStatus {
         case .synced:
-            return .green
+            return ColorConstants.success
         case .pending:
-            return .orange
+            return ColorConstants.warning
         case .failed:
-            return .red
+            return ColorConstants.error
         }
     }
 
@@ -526,7 +526,7 @@ struct StatBox: View {
         VStack(spacing: 8) {
             Image(systemName: icon)
                 .font(.title2)
-                .foregroundStyle(.blue)
+                .foregroundStyle(ColorConstants.primary)
 
             VStack(spacing: 2) {
                 HStack(alignment: .lastTextBaseline, spacing: 2) {
@@ -547,7 +547,7 @@ struct StatBox: View {
         }
         .frame(maxWidth: .infinity)
         .padding()
-        .background(Color(.secondarySystemGroupedBackground))
+        .background(ColorConstants.Surface.secondaryGrouped)
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 }
@@ -587,20 +587,7 @@ struct CategoryBadge: View {
     }
 
     private var categoryColor: Color {
-        switch category {
-        case .business:
-            return .blue
-        case .personal:
-            return .purple
-        case .medical:
-            return .red
-        case .charity:
-            return .green
-        case .commute:
-            return .orange
-        case .moving:
-            return .teal
-        }
+        category.color
     }
 }
 
@@ -617,20 +604,20 @@ struct StatusBadge: View {
         .font(.caption)
         .padding(.horizontal, 10)
         .padding(.vertical, 5)
-        .background(Color(.tertiarySystemGroupedBackground))
+        .background(ColorConstants.Surface.tertiaryGrouped)
         .clipShape(Capsule())
     }
 
     private var statusColor: Color {
         switch status {
         case .recording:
-            return .green
+            return ColorConstants.success
         case .processing:
-            return .orange
+            return ColorConstants.warning
         case .completed:
-            return .blue
+            return ColorConstants.primary
         case .verified:
-            return .purple
+            return ColorConstants.info
         }
     }
 }
@@ -682,11 +669,11 @@ struct TripMapPreview: View {
             )) {
                 ZStack {
                     Circle()
-                        .fill(.green)
+                        .fill(ColorConstants.Map.startMarker)
                         .frame(width: 24, height: 24)
                     Image(systemName: "flag.fill")
                         .font(.caption2)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(ColorConstants.Text.inverse)
                 }
             }
 
@@ -698,11 +685,11 @@ struct TripMapPreview: View {
                 )) {
                     ZStack {
                         Circle()
-                            .fill(.red)
+                            .fill(ColorConstants.Map.endMarker)
                             .frame(width: 24, height: 24)
                         Image(systemName: "mappin")
                             .font(.caption2)
-                            .foregroundStyle(.white)
+                            .foregroundStyle(ColorConstants.Text.inverse)
                     }
                 }
             }
@@ -712,7 +699,7 @@ struct TripMapPreview: View {
                let routeData = routeString.data(using: .utf8),
                let coordinates = decodePolyline(routeData) {
                 MapPolyline(coordinates: coordinates)
-                    .stroke(.blue, lineWidth: 4)
+                    .stroke(ColorConstants.Map.route, lineWidth: 4)
             }
         }
         .mapStyle(.standard(elevation: .realistic))
@@ -862,11 +849,11 @@ struct TripFullMapView: View {
                     VStack(spacing: 4) {
                         ZStack {
                             Circle()
-                                .fill(.green)
+                                .fill(ColorConstants.Map.startMarker)
                                 .frame(width: 32, height: 32)
                             Image(systemName: "flag.fill")
                                 .font(.caption)
-                                .foregroundStyle(.white)
+                                .foregroundStyle(ColorConstants.Text.inverse)
                         }
                         Text("Start")
                             .font(.caption2)
@@ -883,11 +870,11 @@ struct TripFullMapView: View {
                         VStack(spacing: 4) {
                             ZStack {
                                 Circle()
-                                    .fill(.red)
+                                    .fill(ColorConstants.Map.endMarker)
                                     .frame(width: 32, height: 32)
                                 Image(systemName: "mappin")
                                     .font(.caption)
-                                    .foregroundStyle(.white)
+                                    .foregroundStyle(ColorConstants.Text.inverse)
                             }
                             Text("End")
                                 .font(.caption2)
@@ -904,7 +891,7 @@ struct TripFullMapView: View {
                    let routeData = routeString.data(using: .utf8),
                    let coordinates = decodePolyline(routeData) {
                     MapPolyline(coordinates: coordinates)
-                        .stroke(.blue, lineWidth: 5)
+                        .stroke(ColorConstants.Map.route, lineWidth: 5)
                 }
             }
             .mapStyle(mapStyle)

@@ -113,6 +113,11 @@ final class VehiclesViewModel: ObservableObject {
     }
 
     private func syncVehicles() async {
+        // Only sync if authenticated
+        guard AuthenticationService.shared.authState == .authenticated else {
+            return
+        }
+
         let endpoint = VehicleEndpoints.list
 
         do {

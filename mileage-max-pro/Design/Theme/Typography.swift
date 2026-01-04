@@ -3,156 +3,203 @@
 //  MileageMaxPro
 //
 //  Enterprise iOS Mileage Tracking Application
+//  Premium Typography System - SF Pro (Bold, Semibold, Regular)
 //
 
 import SwiftUI
 
-/// Typography system following iOS Human Interface Guidelines
-/// Full Dynamic Type support from xSmall to AX5
+/// Premium Typography System following iOS 26 Human Interface Guidelines
+/// Uses SF Pro font family with Dynamic Type support
 enum Typography {
 
-    // MARK: - Font Styles
+    // MARK: - Display Fonts (Hero/Marketing)
 
-    /// Large Title - Screen titles (34pt Bold)
+    /// Display Large - 56pt Bold
+    static var displayLarge: Font {
+        .system(size: 56, weight: .bold, design: .default)
+    }
+
+    /// Display Medium - 44pt Bold
+    static var displayMedium: Font {
+        .system(size: 44, weight: .bold, design: .default)
+    }
+
+    /// Display Small - 36pt Bold
+    static var displaySmall: Font {
+        .system(size: 36, weight: .bold, design: .default)
+    }
+
+    // MARK: - Title Fonts
+
+    /// Large Title - 34pt Bold (iOS Standard)
     static var largeTitle: Font {
         .largeTitle.weight(.bold)
     }
 
-    /// Title 1 - Section headers (28pt Bold)
+    /// Title 1 - 28pt Bold
     static var title1: Font {
         .title.weight(.bold)
     }
 
-    /// Title 2 - Card titles (22pt Bold)
+    /// Title 2 - 22pt Bold
     static var title2: Font {
         .title2.weight(.bold)
     }
 
-    /// Title 3 - Subsections (20pt Semibold)
+    /// Title 3 - 20pt Semibold
     static var title3: Font {
         .title3.weight(.semibold)
     }
 
-    /// Headline - Emphasis (17pt Semibold)
+    // MARK: - Body Fonts
+
+    /// Headline - 17pt Semibold
     static var headline: Font {
-        .headline
+        .headline.weight(.semibold)
     }
 
-    /// Body - Primary content (17pt Regular)
+    /// Body - 17pt Regular
     static var body: Font {
         .body
     }
 
-    /// Body Bold - Emphasized content (17pt Semibold)
+    /// Body Bold - 17pt Semibold
     static var bodyBold: Font {
         .body.weight(.semibold)
     }
 
-    /// Callout - Supporting text (16pt Regular)
+    /// Callout - 16pt Regular
     static var callout: Font {
         .callout
     }
 
-    /// Callout Bold - Emphasized supporting text (16pt Semibold)
+    /// Callout Bold - 16pt Semibold
     static var calloutBold: Font {
         .callout.weight(.semibold)
     }
 
-    /// Subheadline - Secondary content (15pt Regular)
+    /// Subheadline - 15pt Regular
     static var subheadline: Font {
         .subheadline
     }
 
-    /// Subheadline Bold - Emphasized secondary (15pt Semibold)
+    /// Subheadline Bold - 15pt Semibold
     static var subheadlineBold: Font {
         .subheadline.weight(.semibold)
     }
 
-    /// Footnote - Tertiary content (13pt Regular)
+    // MARK: - Small Fonts
+
+    /// Footnote - 13pt Regular
     static var footnote: Font {
         .footnote
     }
 
-    /// Caption 1 - Labels (12pt Regular)
+    /// Footnote Bold - 13pt Semibold
+    static var footnoteBold: Font {
+        .footnote.weight(.semibold)
+    }
+
+    /// Caption 1 - 12pt Regular
     static var caption1: Font {
         .caption
     }
 
-    /// Caption 2 - Timestamps (11pt Regular)
+    /// Caption 1 Bold - 12pt Semibold
+    static var caption1Bold: Font {
+        .caption.weight(.semibold)
+    }
+
+    /// Caption 2 - 11pt Regular
     static var caption2: Font {
         .caption2
     }
 
-    // MARK: - Monospaced Fonts
-
-    /// Monospaced for numbers (17pt)
-    static var monoBody: Font {
-        .system(.body, design: .monospaced)
+    /// Caption 2 Bold - 11pt Semibold
+    static var caption2Bold: Font {
+        .caption2.weight(.semibold)
     }
 
-    /// Monospaced large for stats (28pt)
-    static var monoLarge: Font {
-        .system(.title, design: .monospaced).weight(.bold)
+    // MARK: - Stat Display Fonts (Rounded for Numbers)
+
+    /// Stat Hero - 64pt Bold Rounded
+    static var statHero: Font {
+        .system(size: 64, weight: .bold, design: .rounded)
     }
 
-    /// Monospaced caption (12pt)
-    static var monoCaption: Font {
-        .system(.caption, design: .monospaced)
-    }
-
-    // MARK: - Rounded Fonts
-
-    /// Rounded headline for friendly UI (17pt)
-    static var roundedHeadline: Font {
-        .system(.headline, design: .rounded).weight(.semibold)
-    }
-
-    /// Rounded title for friendly headers (22pt)
-    static var roundedTitle: Font {
-        .system(.title2, design: .rounded).weight(.bold)
-    }
-
-    /// Rounded large title (34pt)
-    static var roundedLargeTitle: Font {
-        .system(.largeTitle, design: .rounded).weight(.bold)
-    }
-
-    // MARK: - Stat Display
-
-    /// Large stat number (48pt Bold Rounded)
+    /// Stat Large - 48pt Bold Rounded
     static var statLarge: Font {
         .system(size: 48, weight: .bold, design: .rounded)
     }
 
-    /// Medium stat number (32pt Bold Rounded)
+    /// Stat Medium - 32pt Bold Rounded
     static var statMedium: Font {
         .system(size: 32, weight: .bold, design: .rounded)
     }
 
-    /// Small stat number (24pt Semibold Rounded)
+    /// Stat Small - 24pt Semibold Rounded
     static var statSmall: Font {
         .system(size: 24, weight: .semibold, design: .rounded)
     }
 
-    // MARK: - Button Text
+    /// Stat Mini - 18pt Semibold Rounded
+    static var statMini: Font {
+        .system(size: 18, weight: .semibold, design: .rounded)
+    }
 
-    /// Primary button text (17pt Semibold)
+    // MARK: - Monospaced Fonts
+
+    /// Mono Body - 17pt
+    static var monoBody: Font {
+        .system(.body, design: .monospaced)
+    }
+
+    /// Mono Large - 28pt Bold
+    static var monoLarge: Font {
+        .system(.title, design: .monospaced).weight(.bold)
+    }
+
+    /// Mono Caption - 12pt
+    static var monoCaption: Font {
+        .system(.caption, design: .monospaced)
+    }
+
+    // MARK: - Button Fonts
+
+    /// Button Primary - 17pt Semibold
     static var buttonPrimary: Font {
         .body.weight(.semibold)
     }
 
-    /// Secondary button text (15pt Medium)
+    /// Button Secondary - 15pt Semibold
     static var buttonSecondary: Font {
-        .subheadline.weight(.medium)
+        .subheadline.weight(.semibold)
     }
 
-    /// Small button/link text (13pt Medium)
+    /// Button Small - 13pt Semibold
     static var buttonSmall: Font {
-        .footnote.weight(.medium)
+        .footnote.weight(.semibold)
+    }
+
+    /// Button Large - 18pt Semibold
+    static var buttonLarge: Font {
+        .system(size: 18, weight: .semibold)
+    }
+
+    // MARK: - Label Fonts
+
+    /// Label - 12pt Bold Uppercase
+    static var label: Font {
+        .system(size: 12, weight: .bold)
+    }
+
+    /// Tag - 11pt Semibold
+    static var tag: Font {
+        .system(size: 11, weight: .semibold)
     }
 }
 
-// MARK: - Text Styles
+// MARK: - Premium Text Styles
 
 extension View {
     /// Apply large title styling
@@ -237,6 +284,14 @@ extension View {
         self
             .font(size.font)
             .foregroundStyle(ColorConstants.Text.primary)
+            .monospacedDigit()
+    }
+
+    /// Apply primary accent styling
+    func primaryStyle() -> some View {
+        self
+            .font(Typography.body)
+            .foregroundStyle(ColorConstants.primary)
     }
 
     /// Apply link styling
@@ -259,20 +314,33 @@ extension View {
             .font(Typography.footnote)
             .foregroundStyle(ColorConstants.success)
     }
+
+    /// Apply label styling (uppercase, tracked)
+    func labelStyle() -> some View {
+        self
+            .font(Typography.label)
+            .foregroundStyle(ColorConstants.Text.tertiary)
+            .textCase(.uppercase)
+            .tracking(0.8)
+    }
 }
 
 // MARK: - Stat Size
 
 enum StatSize {
+    case mini
     case small
     case medium
     case large
+    case hero
 
     var font: Font {
         switch self {
+        case .mini: return Typography.statMini
         case .small: return Typography.statSmall
         case .medium: return Typography.statMedium
         case .large: return Typography.statLarge
+        case .hero: return Typography.statHero
         }
     }
 }
@@ -281,16 +349,17 @@ enum StatSize {
 
 struct MonospacedNumbersModifier: ViewModifier {
     func body(content: Content) -> some View {
-        content
-            .monospacedDigit()
+        content.monospacedDigit()
     }
 }
 
-struct UppercaseModifier: ViewModifier {
+struct UppercaseTrackingModifier: ViewModifier {
+    let tracking: CGFloat
+
     func body(content: Content) -> some View {
         content
             .textCase(.uppercase)
-            .tracking(1.2)
+            .tracking(tracking)
     }
 }
 
@@ -301,12 +370,12 @@ extension View {
     }
 
     /// Uppercase with letter spacing
-    func uppercaseTracking() -> some View {
-        modifier(UppercaseModifier())
+    func uppercaseTracking(_ tracking: CGFloat = 1.2) -> some View {
+        modifier(UppercaseTrackingModifier(tracking: tracking))
     }
 }
 
-// MARK: - Label Styles
+// MARK: - Premium Label Styles
 
 extension LabelStyle where Self == TitleAndIconLabelStyle {
     static var titleAndIcon: TitleAndIconLabelStyle {
@@ -321,6 +390,33 @@ struct TitleAndIconLabelStyle: LabelStyle {
                 .foregroundStyle(ColorConstants.primary)
             configuration.title
                 .font(Typography.body)
+                .foregroundStyle(ColorConstants.Text.primary)
+        }
+    }
+}
+
+struct PremiumIconLabelStyle: LabelStyle {
+    let iconColor: Color
+    let iconSize: CGFloat
+
+    init(iconColor: Color = ColorConstants.primary, iconSize: CGFloat = 20) {
+        self.iconColor = iconColor
+        self.iconSize = iconSize
+    }
+
+    func makeBody(configuration: Configuration) -> some View {
+        HStack(spacing: 12) {
+            configuration.icon
+                .font(.system(size: iconSize, weight: .semibold))
+                .foregroundStyle(iconColor)
+                .frame(width: iconSize + 8, height: iconSize + 8)
+                .background(
+                    Circle()
+                        .fill(iconColor.opacity(0.1))
+                )
+            configuration.title
+                .font(Typography.body)
+                .foregroundStyle(ColorConstants.Text.primary)
         }
     }
 }
@@ -329,7 +425,7 @@ struct TitleAndIconLabelStyle: LabelStyle {
 
 extension Font {
     /// Get scaled font size based on content size category
-    static func scaled(_ size: CGFloat, relativeTo textStyle: TextStyle = .body) -> Font {
-        .system(size: size, weight: .regular, design: .default)
+    static func scaled(_ size: CGFloat, weight: Weight = .regular, design: Design = .default) -> Font {
+        .system(size: size, weight: weight, design: design)
     }
 }

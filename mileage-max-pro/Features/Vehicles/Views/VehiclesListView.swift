@@ -109,7 +109,7 @@ struct VehiclesListView: View {
                             } label: {
                                 Label("Archive", systemImage: "archivebox")
                             }
-                            .tint(.orange)
+                            .tint(ColorConstants.warning)
                         }
                         .swipeActions(edge: .leading) {
                             if !vehicle.isDefault {
@@ -120,7 +120,7 @@ struct VehiclesListView: View {
                                 } label: {
                                     Label("Set Default", systemImage: "star.fill")
                                 }
-                                .tint(.yellow)
+                                .tint(ColorConstants.warning)
                             }
                         }
                     }
@@ -155,7 +155,7 @@ struct VehiclesListView: View {
                             } label: {
                                 Label("Restore", systemImage: "arrow.uturn.backward")
                             }
-                            .tint(.green)
+                            .tint(ColorConstants.success)
                         }
                     }
                 } header: {
@@ -245,8 +245,8 @@ struct VehicleRowView: View {
                             .fontWeight(.bold)
                             .padding(.horizontal, 6)
                             .padding(.vertical, 2)
-                            .background(Color.blue.opacity(0.15))
-                            .foregroundStyle(.blue)
+                            .background(ColorConstants.primary.opacity(0.15))
+                            .foregroundStyle(ColorConstants.primary)
                             .clipShape(Capsule())
                     }
                 }
@@ -280,18 +280,18 @@ struct VehicleRowView: View {
     private var vehicleColor: Color {
         if let colorString = vehicle.color?.lowercased() {
             switch colorString {
-            case "red": return .red
-            case "blue": return .blue
-            case "green": return .green
-            case "black": return .primary
-            case "white": return .gray
-            case "silver", "gray", "grey": return .gray
-            case "yellow": return .yellow
-            case "orange": return .orange
-            default: return .blue
+            case "red": return ColorConstants.error
+            case "blue": return ColorConstants.primary
+            case "green": return ColorConstants.success
+            case "black": return ColorConstants.Text.primary
+            case "white": return ColorConstants.secondary
+            case "silver", "gray", "grey": return ColorConstants.secondary
+            case "yellow": return ColorConstants.warning
+            case "orange": return ColorConstants.warning
+            default: return ColorConstants.primary
             }
         }
-        return .blue
+        return ColorConstants.primary
     }
 
     private var syncIcon: String {
@@ -304,9 +304,9 @@ struct VehicleRowView: View {
 
     private var syncColor: Color {
         switch vehicle.syncStatus {
-        case .synced: return .green
-        case .pending: return .orange
-        case .failed: return .red
+        case .synced: return ColorConstants.success
+        case .pending: return ColorConstants.warning
+        case .failed: return ColorConstants.error
         }
     }
 

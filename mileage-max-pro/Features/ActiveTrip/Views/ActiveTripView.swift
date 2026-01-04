@@ -122,9 +122,10 @@ struct ActiveTripView: View {
             MapCompass()
                 .mapControlVisibility(.visible)
         }
+        .frame(minWidth: 1, minHeight: 1) // Prevent CAMetalLayer zero size warning
     }
 
-    // MARK: - Top Bar
+    // MARK: - Premium Top Bar
 
     private var topBar: some View {
         HStack {
@@ -132,37 +133,43 @@ struct ActiveTripView: View {
                 showingEndTripConfirmation = true
             } label: {
                 Image(systemName: "xmark")
-                    .font(.headline)
-                    .foregroundStyle(.primary)
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundStyle(ColorConstants.Text.secondary)
                     .frame(width: 44, height: 44)
-                    .background(.ultraThinMaterial)
-                    .clipShape(Circle())
+                    .background(
+                        Circle()
+                            .fill(ColorConstants.Surface.card)
+                            .shadow(color: ColorConstants.Neomorphic.darkShadow, radius: 4, x: 0, y: 2)
+                    )
             }
 
             Spacer()
 
-            // Status indicator
+            // Premium status indicator
             HStack(spacing: 8) {
                 Circle()
-                    .fill(viewModel.isPaused ? .orange : .green)
+                    .fill(viewModel.isPaused ? ColorConstants.warning : ColorConstants.success)
                     .frame(width: 10, height: 10)
                     .overlay {
                         if !viewModel.isPaused {
                             Circle()
-                                .stroke(.green.opacity(0.5), lineWidth: 2)
+                                .stroke(ColorConstants.success.opacity(0.5), lineWidth: 2)
                                 .scaleEffect(1.5)
                                 .opacity(viewModel.pulseAnimation ? 0 : 1)
                         }
                     }
 
                 Text(viewModel.isPaused ? "Paused" : "Recording")
-                    .font(.subheadline)
-                    .fontWeight(.medium)
+                    .font(Typography.subheadlineBold)
+                    .foregroundStyle(ColorConstants.Text.primary)
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 10)
-            .background(.ultraThinMaterial)
-            .clipShape(Capsule())
+            .background(
+                Capsule()
+                    .fill(ColorConstants.Surface.card)
+                    .shadow(color: ColorConstants.Neomorphic.darkShadow, radius: 4, x: 0, y: 2)
+            )
 
             Spacer()
 
@@ -170,22 +177,25 @@ struct ActiveTripView: View {
                 centerOnUser()
             } label: {
                 Image(systemName: "location.fill")
-                    .font(.headline)
-                    .foregroundStyle(.blue)
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(ColorConstants.primary)
                     .frame(width: 44, height: 44)
-                    .background(.ultraThinMaterial)
-                    .clipShape(Circle())
+                    .background(
+                        Circle()
+                            .fill(ColorConstants.Surface.card)
+                            .shadow(color: ColorConstants.Neomorphic.darkShadow, radius: 4, x: 0, y: 2)
+                    )
             }
         }
     }
 
-    // MARK: - Bottom Panel
+    // MARK: - Premium Bottom Panel
 
     private var bottomPanel: some View {
         VStack(spacing: 0) {
             // Drag indicator
             RoundedRectangle(cornerRadius: 3)
-                .fill(Color.secondary.opacity(0.3))
+                .fill(ColorConstants.Border.standard)
                 .frame(width: 40, height: 5)
                 .padding(.top, 10)
                 .padding(.bottom, 16)
@@ -207,9 +217,15 @@ struct ActiveTripView: View {
                 .padding(.horizontal)
                 .padding(.bottom, 24)
         }
-        .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
-        .shadow(color: .black.opacity(0.1), radius: 20, y: -5)
+        .background(
+            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusXLarge, style: .continuous)
+                .fill(ColorConstants.Surface.card)
+                .shadow(color: ColorConstants.Neomorphic.darkShadow, radius: 20, x: 0, y: -5)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusXLarge, style: .continuous)
+                .stroke(ColorConstants.Border.standard, lineWidth: 0.5)
+        )
         .padding(.horizontal, 8)
         .padding(.bottom, 8)
     }
@@ -222,19 +238,19 @@ struct ActiveTripView: View {
             GridItem(.flexible()),
             GridItem(.flexible())
         ], spacing: 16) {
-            LiveStatItem(
+            ActiveTripLiveStatItem(
                 title: "Distance",
                 value: String(format: "%.1f", viewModel.distanceMiles),
                 unit: "mi"
             )
 
-            LiveStatItem(
+            ActiveTripLiveStatItem(
                 title: "Duration",
                 value: viewModel.formattedDuration,
                 unit: ""
             )
 
-            LiveStatItem(
+            ActiveTripLiveStatItem(
                 title: "Speed",
                 value: String(format: "%.0f", viewModel.currentSpeed),
                 unit: "mph"
@@ -272,41 +288,51 @@ struct ActiveTripView: View {
         }
     }
 
-    // MARK: - Main Control Button
+    // MARK: - Premium Main Control Button
 
     private var mainControlButton: some View {
         HStack(spacing: 16) {
             // Pause/Resume button
             Button {
+                HapticManager.shared.lightImpact()
                 viewModel.togglePause()
             } label: {
                 HStack(spacing: 8) {
                     Image(systemName: viewModel.isPaused ? "play.fill" : "pause.fill")
                     Text(viewModel.isPaused ? "Resume" : "Pause")
                 }
-                .font(.headline)
+                .font(Typography.buttonPrimary)
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 16)
-                .background(viewModel.isPaused ? Color.green : Color.orange)
-                .clipShape(RoundedRectangle(cornerRadius: 14))
+                .background(
+                    RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
+                        .fill(viewModel.isPaused ? ColorConstants.success : ColorConstants.warning)
+                )
+                .shadow(color: (viewModel.isPaused ? ColorConstants.success : ColorConstants.warning).opacity(0.3), radius: 8, x: 0, y: 4)
             }
+            .buttonStyle(.plain)
 
             // End Trip button
             Button {
+                HapticManager.shared.warning()
                 showingEndTripConfirmation = true
             } label: {
                 HStack(spacing: 8) {
                     Image(systemName: "stop.fill")
                     Text("End Trip")
                 }
-                .font(.headline)
+                .font(Typography.buttonPrimary)
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 16)
-                .background(Color.red)
-                .clipShape(RoundedRectangle(cornerRadius: 14))
+                .background(
+                    RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
+                        .fill(ColorConstants.error)
+                )
+                .shadow(color: ColorConstants.error.opacity(0.3), radius: 8, x: 0, y: 4)
             }
+            .buttonStyle(.plain)
         }
     }
 
@@ -346,9 +372,9 @@ struct ActiveTripView: View {
     }
 }
 
-// MARK: - Live Stat Item
+// MARK: - Active Trip Live Stat Item
 
-struct LiveStatItem: View {
+struct ActiveTripLiveStatItem: View {
     let title: String
     let value: String
     let unit: String
@@ -357,25 +383,26 @@ struct LiveStatItem: View {
         VStack(spacing: 4) {
             HStack(alignment: .lastTextBaseline, spacing: 2) {
                 Text(value)
-                    .font(.title)
-                    .fontWeight(.bold)
+                    .font(Typography.statMedium)
+                    .foregroundStyle(ColorConstants.Text.primary)
                     .monospacedDigit()
 
                 if !unit.isEmpty {
                     Text(unit)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .font(Typography.caption1)
+                        .foregroundStyle(ColorConstants.Text.tertiary)
                 }
             }
 
             Text(title)
-                .font(.caption)
-                .foregroundStyle(.secondary)
+                .font(Typography.caption1)
+                .fontWeight(.medium)
+                .foregroundStyle(ColorConstants.Text.secondary)
         }
     }
 }
 
-// MARK: - Trip Quick Action Button
+// MARK: - Premium Trip Quick Action Button
 
 private struct TripQuickActionButton: View {
     let icon: String
@@ -383,24 +410,52 @@ private struct TripQuickActionButton: View {
     let color: Color
     let action: () -> Void
 
+    @State private var isPressed = false
+
     var body: some View {
-        Button(action: action) {
+        Button {
+            HapticManager.shared.lightImpact()
+            action()
+        } label: {
             VStack(spacing: 6) {
-                Image(systemName: icon)
-                    .font(.title3)
-                    .foregroundStyle(color)
+                ZStack {
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .fill(color.opacity(0.12))
+                        .frame(width: 36, height: 36)
+
+                    Image(systemName: icon)
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundStyle(color)
+                }
 
                 Text(title)
-                    .font(.caption2)
-                    .foregroundStyle(.primary)
+                    .font(Typography.caption2)
+                    .fontWeight(.medium)
+                    .foregroundStyle(ColorConstants.Text.secondary)
                     .lineLimit(1)
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 12)
-            .background(color.opacity(0.1))
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .background(
+                RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
+                    .fill(ColorConstants.Surface.elevated)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
+                    .stroke(ColorConstants.Border.standard, lineWidth: 0.5)
+            )
+            .scaleEffect(isPressed ? 0.95 : 1.0)
         }
         .buttonStyle(.plain)
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { _ in
+                    withAnimation(.quickResponse) { isPressed = true }
+                }
+                .onEnded { _ in
+                    withAnimation(.premiumSpring) { isPressed = false }
+                }
+        )
     }
 }
 

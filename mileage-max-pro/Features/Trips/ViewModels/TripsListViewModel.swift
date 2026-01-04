@@ -200,6 +200,11 @@ final class TripsListViewModel: ObservableObject {
     }
 
     private func syncTrips() async {
+        // Only sync if authenticated
+        guard AuthenticationService.shared.authState == .authenticated else {
+            return
+        }
+
         let interval = dateRange.dateInterval
 
         var filters = TripFilters()

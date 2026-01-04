@@ -3,11 +3,12 @@
 //  MileageMaxPro
 //
 //  Enterprise iOS Mileage Tracking Application
+//  Premium Input Components - iOS 26 Liquid Glass
 //
 
 import SwiftUI
 
-/// Glass-styled text field with Liquid Glass effect
+/// Premium glass-styled text field with Liquid Glass effect
 struct GlassTextField: View {
     let title: String
     @Binding var text: String
@@ -23,6 +24,7 @@ struct GlassTextField: View {
     @State private var showSecureText = false
     @State private var validationResult: ValidationResult = .valid
     @Environment(\.isEnabled) private var isEnabled
+    @Environment(\.colorScheme) private var colorScheme
 
     init(
         _ title: String,
@@ -51,8 +53,7 @@ struct GlassTextField: View {
             // Label
             if !title.isEmpty {
                 Text(title)
-                    .font(Typography.caption1)
-                    .fontWeight(.medium)
+                    .font(Typography.label)
                     .foregroundStyle(ColorConstants.Text.secondary)
             }
 
@@ -61,10 +62,10 @@ struct GlassTextField: View {
                 // Leading icon
                 if let icon = icon {
                     Image(systemName: icon)
-                        .font(.system(size: 16, weight: .medium))
-                        .foregroundStyle(isFocused ? ColorConstants.primary : ColorConstants.Text.tertiary)
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundStyle(iconColor)
                         .frame(width: 24)
-                        .animation(.easeInOut(duration: 0.2), value: isFocused)
+                        .animation(.premiumSpring, value: isFocused)
                 }
 
                 // Text field
@@ -95,45 +96,58 @@ struct GlassTextField: View {
                 // Secure toggle / Clear button
                 if isSecure && !text.isEmpty {
                     Button {
+                        HapticManager.shared.lightImpact()
                         showSecureText.toggle()
                     } label: {
                         Image(systemName: showSecureText ? "eye.slash.fill" : "eye.fill")
-                            .font(.system(size: 14))
+                            .font(.system(size: 14, weight: .medium))
                             .foregroundStyle(ColorConstants.Text.tertiary)
                     }
+                    .buttonStyle(.plain)
                 } else if !text.isEmpty && !isSecure {
                     Button {
+                        HapticManager.shared.lightImpact()
                         text = ""
                     } label: {
                         Image(systemName: "xmark.circle.fill")
-                            .font(.system(size: 14))
-                            .foregroundStyle(ColorConstants.Text.tertiary)
+                            .font(.system(size: 16))
+                            .foregroundStyle(ColorConstants.Text.quaternary)
                     }
+                    .buttonStyle(.plain)
                 }
 
                 // Validation indicator
                 if case .invalid = validationResult {
                     Image(systemName: "exclamationmark.circle.fill")
-                        .font(.system(size: 16))
+                        .font(.system(size: 16, weight: .medium))
                         .foregroundStyle(ColorConstants.error)
+                        .transition(.scale.combined(with: .opacity))
                 } else if case .valid = validationResult, validation != nil, !text.isEmpty {
                     Image(systemName: "checkmark.circle.fill")
-                        .font(.system(size: 16))
+                        .font(.system(size: 16, weight: .medium))
                         .foregroundStyle(ColorConstants.success)
+                        .transition(.scale.combined(with: .opacity))
                 }
             }
             .padding(.horizontal, Spacing.md)
-            .padding(.vertical, Spacing.sm + 2)
+            .padding(.vertical, 14)
             .background(fieldBackground)
             .clipShape(RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous))
             .overlay(fieldBorder)
-            .opacity(isEnabled ? 1 : 0.6)
+            .shadow(
+                color: isFocused ? ColorConstants.primary.opacity(0.15) : Color.clear,
+                radius: 8,
+                x: 0,
+                y: 4
+            )
+            .opacity(isEnabled ? 1 : 0.5)
+            .animation(.premiumSpring, value: isFocused)
 
             // Error message
             if case .invalid(let message) = validationResult {
                 HStack(spacing: 4) {
                     Image(systemName: "exclamationmark.circle")
-                        .font(.system(size: 11))
+                        .font(.system(size: 11, weight: .medium))
                     Text(message)
                         .font(Typography.caption2)
                 }
@@ -141,17 +155,43 @@ struct GlassTextField: View {
                 .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
-        .animation(.easeInOut(duration: 0.2), value: validationResult.isValid)
+        .animation(.premiumSpring, value: validationResult.isValid)
+    }
+
+    private var iconColor: Color {
+        if case .invalid = validationResult {
+            return ColorConstants.error
+        }
+        return isFocused ? ColorConstants.primary : ColorConstants.Text.tertiary
     }
 
     @ViewBuilder
     private var fieldBackground: some View {
-        RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
-            .fill(.ultraThinMaterial)
-            .overlay(
+        ZStack {
+            // Base neomorphic background
+            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
+                .fill(ColorConstants.Surface.card)
+
+            // Subtle inner shadow for depth
+            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            Color.black.opacity(0.02),
+                            Color.clear,
+                            Color.white.opacity(0.5)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+
+            // Focused highlight
+            if isFocused {
                 RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
-                    .fill(Color.white.opacity(isFocused ? 0.1 : 0.05))
-            )
+                    .fill(ColorConstants.Glass.primaryTint)
+            }
+        }
     }
 
     @ViewBuilder
@@ -164,7 +204,7 @@ struct GlassTextField: View {
         if case .invalid = validationResult {
             return ColorConstants.error
         }
-        return isFocused ? ColorConstants.primary : Color.white.opacity(0.2)
+        return isFocused ? ColorConstants.primary : ColorConstants.Border.standard
     }
 
     private func validate() {
@@ -218,7 +258,7 @@ enum TextValidators {
     }
 }
 
-// MARK: - Glass Text Area
+// MARK: - Premium Glass Text Area
 
 struct GlassTextArea: View {
     let title: String
@@ -226,6 +266,7 @@ struct GlassTextArea: View {
     let placeholder: String
     let minHeight: CGFloat
     let maxHeight: CGFloat
+    let maxCharacters: Int?
 
     @FocusState private var isFocused: Bool
 
@@ -234,21 +275,22 @@ struct GlassTextArea: View {
         text: Binding<String>,
         placeholder: String = "",
         minHeight: CGFloat = 100,
-        maxHeight: CGFloat = 200
+        maxHeight: CGFloat = 200,
+        maxCharacters: Int? = nil
     ) {
         self.title = title
         self._text = text
         self.placeholder = placeholder
         self.minHeight = minHeight
         self.maxHeight = maxHeight
+        self.maxCharacters = maxCharacters
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.xs) {
             if !title.isEmpty {
                 Text(title)
-                    .font(Typography.caption1)
-                    .fontWeight(.medium)
+                    .font(Typography.label)
                     .foregroundStyle(ColorConstants.Text.secondary)
             }
 
@@ -256,7 +298,7 @@ struct GlassTextArea: View {
                 if text.isEmpty {
                     Text(placeholder)
                         .font(Typography.body)
-                        .foregroundStyle(ColorConstants.Text.tertiary)
+                        .foregroundStyle(ColorConstants.Text.placeholder)
                         .padding(.horizontal, 4)
                         .padding(.top, 8)
                 }
@@ -267,29 +309,55 @@ struct GlassTextArea: View {
                     .focused($isFocused)
                     .scrollContentBackground(.hidden)
                     .frame(minHeight: minHeight, maxHeight: maxHeight)
+                    .onChange(of: text) { _, newValue in
+                        if let max = maxCharacters, newValue.count > max {
+                            text = String(newValue.prefix(max))
+                        }
+                    }
             }
             .padding(Spacing.sm)
             .background(
-                RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
-                    .fill(.ultraThinMaterial)
+                ZStack {
+                    RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
+                        .fill(ColorConstants.Surface.card)
+
+                    if isFocused {
+                        RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
+                            .fill(ColorConstants.Glass.primaryTint)
+                    }
+                }
             )
             .overlay(
                 RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
-                    .stroke(isFocused ? ColorConstants.primary : Color.white.opacity(0.2), lineWidth: isFocused ? 2 : 1)
+                    .stroke(isFocused ? ColorConstants.primary : ColorConstants.Border.standard, lineWidth: isFocused ? 2 : 1)
             )
+            .shadow(
+                color: isFocused ? ColorConstants.primary.opacity(0.1) : Color.clear,
+                radius: 6,
+                x: 0,
+                y: 3
+            )
+            .animation(.premiumSpring, value: isFocused)
 
             // Character count
             HStack {
                 Spacer()
-                Text("\(text.count) characters")
-                    .font(Typography.caption2)
-                    .foregroundStyle(ColorConstants.Text.tertiary)
+                if let max = maxCharacters {
+                    Text("\(text.count)/\(max)")
+                        .font(Typography.caption2)
+                        .foregroundStyle(text.count >= max ? ColorConstants.warning : ColorConstants.Text.tertiary)
+                        .monospacedDigit()
+                } else {
+                    Text("\(text.count) characters")
+                        .font(Typography.caption2)
+                        .foregroundStyle(ColorConstants.Text.tertiary)
+                }
             }
         }
     }
 }
 
-// MARK: - Glass Search Field
+// MARK: - Premium Glass Search Field
 
 struct GlassSearchField: View {
     @Binding var text: String
@@ -297,6 +365,7 @@ struct GlassSearchField: View {
     let onSubmit: (() -> Void)?
 
     @FocusState private var isFocused: Bool
+    @State private var isAnimating = false
 
     init(
         text: Binding<String>,
@@ -311,8 +380,10 @@ struct GlassSearchField: View {
     var body: some View {
         HStack(spacing: Spacing.sm) {
             Image(systemName: "magnifyingglass")
-                .font(.system(size: 16, weight: .medium))
-                .foregroundStyle(ColorConstants.Text.tertiary)
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(isFocused ? ColorConstants.primary : ColorConstants.Text.tertiary)
+                .scaleEffect(isFocused ? 1.1 : 1.0)
+                .animation(.premiumSpring, value: isFocused)
 
             TextField(placeholder, text: $text)
                 .font(Typography.body)
@@ -322,30 +393,242 @@ struct GlassSearchField: View {
 
             if !text.isEmpty {
                 Button {
-                    text = ""
+                    HapticManager.shared.lightImpact()
+                    withAnimation(.premiumSpring) {
+                        text = ""
+                    }
                 } label: {
                     Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: 14))
-                        .foregroundStyle(ColorConstants.Text.tertiary)
+                        .font(.system(size: 16))
+                        .foregroundStyle(ColorConstants.Text.quaternary)
                 }
+                .buttonStyle(.plain)
+                .transition(.scale.combined(with: .opacity))
             }
         }
         .padding(.horizontal, Spacing.md)
-        .padding(.vertical, Spacing.sm)
+        .padding(.vertical, 12)
         .background(
             Capsule()
-                .fill(.ultraThinMaterial)
+                .fill(ColorConstants.Surface.card)
+                .shadow(
+                    color: ColorConstants.Neomorphic.darkShadow,
+                    radius: 4,
+                    x: 0,
+                    y: 2
+                )
         )
         .overlay(
             Capsule()
-                .stroke(isFocused ? ColorConstants.primary.opacity(0.5) : Color.white.opacity(0.2), lineWidth: 1)
+                .stroke(
+                    isFocused ? ColorConstants.primary : ColorConstants.Border.standard,
+                    lineWidth: isFocused ? 2 : 1
+                )
         )
+        .shadow(
+            color: isFocused ? ColorConstants.primary.opacity(0.15) : Color.clear,
+            radius: 8,
+            x: 0,
+            y: 4
+        )
+        .animation(.premiumSpring, value: isFocused)
+        .animation(.premiumSpring, value: text.isEmpty)
+    }
+}
+
+// MARK: - Premium Number Input Field
+
+struct GlassNumberField: View {
+    let title: String
+    @Binding var value: Double
+    let placeholder: String
+    let icon: String?
+    let suffix: String?
+    let formatter: NumberFormatter
+    let range: ClosedRange<Double>?
+
+    @FocusState private var isFocused: Bool
+    @State private var textValue: String = ""
+
+    init(
+        _ title: String,
+        value: Binding<Double>,
+        placeholder: String = "0",
+        icon: String? = nil,
+        suffix: String? = nil,
+        decimals: Int = 2,
+        range: ClosedRange<Double>? = nil
+    ) {
+        self.title = title
+        self._value = value
+        self.placeholder = placeholder
+        self.icon = icon
+        self.suffix = suffix
+        self.range = range
+
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.minimumFractionDigits = 0
+        formatter.maximumFractionDigits = decimals
+        self.formatter = formatter
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: Spacing.xs) {
+            if !title.isEmpty {
+                Text(title)
+                    .font(Typography.label)
+                    .foregroundStyle(ColorConstants.Text.secondary)
+            }
+
+            HStack(spacing: Spacing.sm) {
+                if let icon = icon {
+                    Image(systemName: icon)
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundStyle(isFocused ? ColorConstants.primary : ColorConstants.Text.tertiary)
+                        .frame(width: 24)
+                }
+
+                TextField(placeholder, text: $textValue)
+                    .font(Typography.statSmall)
+                    .fontDesign(.rounded)
+                    .foregroundStyle(ColorConstants.Text.primary)
+                    .keyboardType(.decimalPad)
+                    .focused($isFocused)
+                    .monospacedDigit()
+                    .multilineTextAlignment(suffix != nil ? .trailing : .leading)
+                    .onChange(of: textValue) { _, newValue in
+                        if let number = formatter.number(from: newValue) {
+                            var val = number.doubleValue
+                            if let range = range {
+                                val = min(max(val, range.lowerBound), range.upperBound)
+                            }
+                            value = val
+                        }
+                    }
+                    .onAppear {
+                        textValue = value > 0 ? formatter.string(from: NSNumber(value: value)) ?? "" : ""
+                    }
+
+                if let suffix = suffix {
+                    Text(suffix)
+                        .font(Typography.body)
+                        .foregroundStyle(ColorConstants.Text.tertiary)
+                }
+            }
+            .padding(.horizontal, Spacing.md)
+            .padding(.vertical, 14)
+            .background(
+                ZStack {
+                    RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
+                        .fill(ColorConstants.Surface.card)
+
+                    if isFocused {
+                        RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
+                            .fill(ColorConstants.Glass.primaryTint)
+                    }
+                }
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
+                    .stroke(isFocused ? ColorConstants.primary : ColorConstants.Border.standard, lineWidth: isFocused ? 2 : 1)
+            )
+            .shadow(
+                color: isFocused ? ColorConstants.primary.opacity(0.1) : Color.clear,
+                radius: 6,
+                x: 0,
+                y: 3
+            )
+            .animation(.premiumSpring, value: isFocused)
+        }
+    }
+}
+
+// MARK: - Premium Picker Field
+
+struct GlassPickerField<T: Hashable>: View {
+    let title: String
+    @Binding var selection: T
+    let options: [T]
+    let optionLabel: (T) -> String
+    let icon: String?
+
+    @State private var isExpanded = false
+
+    init(
+        _ title: String,
+        selection: Binding<T>,
+        options: [T],
+        icon: String? = nil,
+        optionLabel: @escaping (T) -> String
+    ) {
+        self.title = title
+        self._selection = selection
+        self.options = options
+        self.icon = icon
+        self.optionLabel = optionLabel
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: Spacing.xs) {
+            if !title.isEmpty {
+                Text(title)
+                    .font(Typography.label)
+                    .foregroundStyle(ColorConstants.Text.secondary)
+            }
+
+            Menu {
+                ForEach(options, id: \.self) { option in
+                    Button {
+                        HapticManager.shared.selection()
+                        selection = option
+                    } label: {
+                        HStack {
+                            Text(optionLabel(option))
+                            if option == selection {
+                                Spacer()
+                                Image(systemName: "checkmark")
+                            }
+                        }
+                    }
+                }
+            } label: {
+                HStack(spacing: Spacing.sm) {
+                    if let icon = icon {
+                        Image(systemName: icon)
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundStyle(ColorConstants.primary)
+                            .frame(width: 24)
+                    }
+
+                    Text(optionLabel(selection))
+                        .font(Typography.body)
+                        .foregroundStyle(ColorConstants.Text.primary)
+
+                    Spacer()
+
+                    Image(systemName: "chevron.up.chevron.down")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(ColorConstants.Text.tertiary)
+                }
+                .padding(.horizontal, Spacing.md)
+                .padding(.vertical, 14)
+                .background(
+                    RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
+                        .fill(ColorConstants.Surface.card)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
+                        .stroke(ColorConstants.Border.standard, lineWidth: 1)
+                )
+            }
+        }
     }
 }
 
 // MARK: - Preview
 
-#Preview("Glass Text Fields") {
+#Preview("Premium Glass Input Fields") {
     ScrollView {
         VStack(spacing: Spacing.lg) {
             GlassTextField(
@@ -366,24 +649,24 @@ struct GlassSearchField: View {
                 validation: TextValidators.minLength(8)
             )
 
-            GlassTextField(
-                "Mileage",
-                text: .constant("12345"),
-                placeholder: "Current odometer",
+            GlassNumberField(
+                "Odometer",
+                value: .constant(12345.6),
+                placeholder: "Current reading",
                 icon: "gauge",
-                keyboardType: .numberPad,
-                validation: TextValidators.numeric
+                suffix: "mi"
             )
 
             GlassSearchField(text: .constant("coffee shop"))
 
             GlassTextArea(
-                "Notes",
+                "Trip Notes",
                 text: .constant("This is a sample note for the trip."),
-                placeholder: "Add trip notes..."
+                placeholder: "Add notes about your trip...",
+                maxCharacters: 500
             )
         }
         .padding()
     }
-    .background(Color(uiColor: .systemGroupedBackground))
+    .background(ColorConstants.Surface.grouped)
 }

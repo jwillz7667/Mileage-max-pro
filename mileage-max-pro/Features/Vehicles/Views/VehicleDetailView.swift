@@ -148,16 +148,12 @@ struct VehicleDetailView: View {
                 // Vehicle Icon
                 ZStack {
                     Circle()
-                        .fill(LinearGradient(
-                            colors: [.blue, .cyan],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        ))
+                        .fill(ColorConstants.Gradients.primary)
                         .frame(width: 80, height: 80)
 
                     Image(systemName: vehicleIcon)
                         .font(.largeTitle)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(ColorConstants.Text.inverse)
                 }
 
                 VStack(spacing: 4) {
@@ -173,13 +169,13 @@ struct VehicleDetailView: View {
                 // Badges
                 HStack(spacing: 8) {
                     if vehicle.isDefault {
-                        Badge(text: "Default", color: .blue)
+                        Badge(text: "Default", color: ColorConstants.primary)
                     }
 
                     Badge(text: vehicle.fuelType.rawValue, color: fuelTypeColor)
 
                     if !vehicle.isActive {
-                        Badge(text: "Archived", color: .gray)
+                        Badge(text: "Archived", color: ColorConstants.secondary)
                     }
                 }
             }
@@ -200,7 +196,7 @@ struct VehicleDetailView: View {
                 value: formatNumber(vehicle.currentOdometer),
                 unit: "miles",
                 icon: "gauge.with.needle",
-                color: .blue
+                color: ColorConstants.primary
             )
 
             VehicleStatCard(
@@ -208,7 +204,7 @@ struct VehicleDetailView: View {
                 value: "\(tripStats?.totalTrips ?? 0)",
                 unit: "trips",
                 icon: "road.lanes",
-                color: .green
+                color: ColorConstants.success
             )
 
             VehicleStatCard(
@@ -216,7 +212,7 @@ struct VehicleDetailView: View {
                 value: formatNumber(Int(tripStats?.totalMiles ?? 0)),
                 unit: "miles",
                 icon: "map",
-                color: .purple
+                color: ColorConstants.info
             )
 
             VehicleStatCard(
@@ -224,7 +220,7 @@ struct VehicleDetailView: View {
                 value: String(format: "%.1f", tripStats?.averageTripDistance ?? 0),
                 unit: "miles",
                 icon: "chart.line.uptrend.xyaxis",
-                color: .orange
+                color: ColorConstants.warning
             )
         }
     }
@@ -244,7 +240,7 @@ struct VehicleDetailView: View {
                                 x: .value("Day", day.date, unit: .day),
                                 y: .value("Miles", day.miles)
                             )
-                            .foregroundStyle(.blue.gradient)
+                            .foregroundStyle(ColorConstants.primary.gradient)
                             .cornerRadius(4)
                         }
                     }
@@ -395,11 +391,11 @@ struct VehicleDetailView: View {
 
     private var fuelTypeColor: Color {
         switch vehicle.fuelType {
-        case .electric: return .green
-        case .hybrid: return .teal
-        case .gasoline: return .blue
-        case .diesel: return .orange
-        case .pluginHybrid: return .cyan
+        case .electric: return ColorConstants.success
+        case .hybrid: return ColorConstants.info
+        case .gasoline: return ColorConstants.primary
+        case .diesel: return ColorConstants.warning
+        case .pluginHybrid: return ColorConstants.info
         }
     }
 

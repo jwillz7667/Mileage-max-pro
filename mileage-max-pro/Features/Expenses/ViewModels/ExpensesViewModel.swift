@@ -167,6 +167,11 @@ final class ExpensesViewModel: ObservableObject {
     }
 
     private func syncExpenses() async {
+        // Only sync if authenticated
+        guard AuthenticationService.shared.authState == .authenticated else {
+            return
+        }
+
         let interval = dateRange.dateInterval
 
         var filters = ExpenseFilters()

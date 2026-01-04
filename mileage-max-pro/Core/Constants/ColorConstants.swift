@@ -3,245 +3,332 @@
 //  MileageMaxPro
 //
 //  Enterprise iOS Mileage Tracking Application
+//  Premium Design System - iOS 26 Liquid Glass
 //
 
 import SwiftUI
 
-/// Color palette for MileageMax Pro following iOS 26.1 Liquid Glass design
+/// Premium color palette for MileageMax Pro
+/// Design System: iOS 26 Liquid Glass + 3D Neomorphism
 enum ColorConstants {
 
-    // MARK: - Primary Palette
+    // MARK: - Brand Colors
 
-    /// Primary brand color (iOS Blue with vibrancy)
-    static let primary = Color(hex: "007AFF")
+    /// Primary accent - Vibrant Blue #0087FF
+    static let primary = Color(hex: "0087FF")
 
-    /// Secondary brand color (iOS Purple)
-    static let secondary = Color(hex: "5856D6")
+    /// Secondary accent - Sophisticated Gray #8C8C8C
+    static let secondary = Color(hex: "8C8C8C")
 
-    /// Accent color for positive actions (iOS Green)
-    static let accent = Color(hex: "34C759")
+    /// Tertiary accent - Lighter primary for highlights
+    static let tertiary = Color(hex: "0087FF").opacity(0.6)
+
+    /// Pure white background
+    static let background = Color(hex: "FFFFFF")
+
+    /// Primary text - Pure Black #000000
+    static let textPrimary = Color(hex: "000000")
+
+    // MARK: - Extended Palette
+
+    /// Light primary tint for backgrounds
+    static let primaryLight = Color(hex: "0087FF").opacity(0.08)
+
+    /// Medium primary tint for hover states
+    static let primaryMedium = Color(hex: "0087FF").opacity(0.15)
+
+    /// Dark primary for pressed states
+    static let primaryDark = Color(hex: "0066CC")
+
+    /// Secondary light for subtle elements
+    static let secondaryLight = Color(hex: "8C8C8C").opacity(0.1)
+
+    /// Off-white for card backgrounds
+    static let surfaceWhite = Color(hex: "FAFAFA")
+
+    /// Subtle border color
+    static let border = Color(hex: "E5E5E5")
 
     // MARK: - Semantic Colors
 
-    /// Success state color
-    static let success = Color(hex: "34C759")
+    /// Success state - Fresh green
+    static let success = Color(hex: "00C853")
 
-    /// Warning state color
-    static let warning = Color(hex: "FF9500")
+    /// Warning state - Warm amber
+    static let warning = Color(hex: "FFB300")
 
-    /// Error/destructive state color
-    static let error = Color(hex: "FF3B30")
+    /// Error/destructive state - Crisp red
+    static let error = Color(hex: "FF3D00")
 
-    /// Informational color
-    static let info = Color(hex: "5AC8FA")
+    /// Info state - Cool blue
+    static let info = Color(hex: "0087FF")
 
     // MARK: - Trip Category Colors
 
     enum TripCategory {
-        static let business = Color(hex: "007AFF")
-        static let personal = Color(hex: "5856D6")
-        static let medical = Color(hex: "FF2D55")
-        static let charity = Color(hex: "FF9500")
-        static let moving = Color(hex: "AF52DE")
-        static let commute = Color(hex: "00C7BE")
+        static let business = Color(hex: "0087FF")
+        static let personal = Color(hex: "8C8C8C")
+        static let medical = Color(hex: "FF3D00")
+        static let charity = Color(hex: "00C853")
+        static let moving = Color(hex: "7C4DFF")
+        static let commute = Color(hex: "FFB300")
     }
 
     // MARK: - Vehicle Type Colors
 
     enum VehicleType {
-        static let gasoline = Color(hex: "FF9500")
-        static let diesel = Color(hex: "8E8E93")
-        static let electric = Color(hex: "34C759")
-        static let hybrid = Color(hex: "5AC8FA")
-        static let pluginHybrid = Color(hex: "30D158")
+        static let gasoline = Color(hex: "FFB300")
+        static let diesel = Color(hex: "8C8C8C")
+        static let electric = Color(hex: "00C853")
+        static let hybrid = Color(hex: "0087FF")
+        static let pluginHybrid = Color(hex: "00E676")
     }
 
     // MARK: - Expense Category Colors
 
     enum ExpenseCategory {
-        static let fuel = Color(hex: "FF9500")
-        static let parking = Color(hex: "5856D6")
-        static let tolls = Color(hex: "007AFF")
-        static let maintenance = Color(hex: "FF2D55")
-        static let repairs = Color(hex: "FF3B30")
-        static let insurance = Color(hex: "AF52DE")
-        static let registration = Color(hex: "5AC8FA")
-        static let carWash = Color(hex: "00C7BE")
-        static let supplies = Color(hex: "30D158")
-        static let other = Color(hex: "8E8E93")
+        static let fuel = Color(hex: "FFB300")
+        static let parking = Color(hex: "7C4DFF")
+        static let tolls = Color(hex: "0087FF")
+        static let maintenance = Color(hex: "FF3D00")
+        static let repairs = Color(hex: "D50000")
+        static let insurance = Color(hex: "8C8C8C")
+        static let registration = Color(hex: "00B8D4")
+        static let carWash = Color(hex: "00C853")
+        static let supplies = Color(hex: "76FF03")
+        static let other = Color(hex: "8C8C8C")
     }
 
     // MARK: - Chart Colors
 
     static let chartColors: [Color] = [
-        Color(hex: "007AFF"),
-        Color(hex: "34C759"),
-        Color(hex: "FF9500"),
-        Color(hex: "FF2D55"),
-        Color(hex: "5856D6"),
-        Color(hex: "5AC8FA"),
-        Color(hex: "AF52DE"),
-        Color(hex: "00C7BE"),
-        Color(hex: "FF3B30"),
-        Color(hex: "30D158")
+        Color(hex: "0087FF"),
+        Color(hex: "00C853"),
+        Color(hex: "FFB300"),
+        Color(hex: "FF3D00"),
+        Color(hex: "7C4DFF"),
+        Color(hex: "00B8D4"),
+        Color(hex: "8C8C8C"),
+        Color(hex: "00E676"),
+        Color(hex: "FF6D00"),
+        Color(hex: "D500F9")
     ]
 
-    // MARK: - Gradient Definitions
+    // MARK: - Gradients
 
     enum Gradients {
-        /// Primary brand gradient
+        /// Primary brand gradient - Blue to lighter blue
         static let primary = LinearGradient(
-            colors: [Color(hex: "007AFF"), Color(hex: "5856D6")],
+            colors: [Color(hex: "0087FF"), Color(hex: "00A8FF")],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+
+        /// Premium shimmer gradient
+        static let shimmer = LinearGradient(
+            colors: [Color(hex: "0087FF"), Color(hex: "00D4FF"), Color(hex: "0087FF")],
             startPoint: .topLeading,
             endPoint: .bottomTrailing
         )
 
         /// Success gradient
         static let success = LinearGradient(
-            colors: [Color(hex: "34C759"), Color(hex: "30D158")],
+            colors: [Color(hex: "00C853"), Color(hex: "00E676")],
             startPoint: .topLeading,
             endPoint: .bottomTrailing
         )
 
         /// Warning gradient
         static let warning = LinearGradient(
-            colors: [Color(hex: "FF9500"), Color(hex: "FF6B00")],
+            colors: [Color(hex: "FFB300"), Color(hex: "FFC107")],
             startPoint: .topLeading,
             endPoint: .bottomTrailing
         )
 
         /// Error gradient
         static let error = LinearGradient(
-            colors: [Color(hex: "FF3B30"), Color(hex: "FF2D55")],
+            colors: [Color(hex: "FF3D00"), Color(hex: "FF6E40")],
             startPoint: .topLeading,
             endPoint: .bottomTrailing
         )
 
-        /// Glass overlay gradient for Liquid Glass effect
+        /// Glass overlay - Premium liquid glass effect
         static let glassOverlay = LinearGradient(
             colors: [
-                Color.white.opacity(0.25),
-                Color.white.opacity(0.05)
+                Color.white.opacity(0.4),
+                Color.white.opacity(0.1)
             ],
             startPoint: .topLeading,
             endPoint: .bottomTrailing
         )
 
-        /// Dark glass overlay for dark mode
-        static let darkGlassOverlay = LinearGradient(
+        /// Subtle glass highlight
+        static let glassHighlight = LinearGradient(
             colors: [
-                Color.white.opacity(0.15),
-                Color.white.opacity(0.02)
+                Color.white.opacity(0.6),
+                Color.white.opacity(0.0)
+            ],
+            startPoint: .top,
+            endPoint: .center
+        )
+
+        /// Card gradient background
+        static let cardBackground = LinearGradient(
+            colors: [
+                Color(hex: "FFFFFF"),
+                Color(hex: "F8F9FA")
+            ],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+
+        /// Neomorphic inner shadow gradient
+        static let neomorphicInner = LinearGradient(
+            colors: [
+                Color.black.opacity(0.05),
+                Color.clear
             ],
             startPoint: .topLeading,
             endPoint: .bottomTrailing
-        )
-
-        /// Shimmer gradient for loading states
-        static let shimmer = LinearGradient(
-            colors: [
-                Color.gray.opacity(0.2),
-                Color.gray.opacity(0.3),
-                Color.gray.opacity(0.2)
-            ],
-            startPoint: .leading,
-            endPoint: .trailing
         )
     }
 
-    // MARK: - Neumorphic Colors
+    // MARK: - Neomorphic Colors
 
-    enum Neumorphic {
-        /// Light mode light shadow color
+    enum Neomorphic {
+        /// Light shadow (top-left)
         static let lightShadow = Color.white
 
-        /// Light mode dark shadow color
-        static let darkShadow = Color.black.opacity(0.15)
+        /// Dark shadow (bottom-right)
+        static let darkShadow = Color.black.opacity(0.08)
 
-        /// Dark mode light shadow color (highlight)
-        static let darkModeLightShadow = Color.white.opacity(0.05)
+        /// Inner light for pressed states
+        static let innerLight = Color.white.opacity(0.8)
 
-        /// Dark mode dark shadow color
-        static let darkModeDarkShadow = Color.black.opacity(0.4)
+        /// Inner dark for pressed states
+        static let innerDark = Color.black.opacity(0.03)
+
+        /// Elevated surface
+        static let elevated = Color(hex: "FFFFFF")
+
+        /// Recessed surface
+        static let recessed = Color(hex: "F0F0F0")
     }
 
     // MARK: - Surface Colors
 
     enum Surface {
-        /// Card background color
-        static let card = Color(uiColor: .secondarySystemBackground)
+        /// Pure white card
+        static let card = Color(hex: "FFFFFF")
 
-        /// Elevated surface color
-        static let elevated = Color(uiColor: .tertiarySystemBackground)
+        /// Elevated white with subtle tint
+        static let elevated = Color(hex: "FAFAFA")
 
-        /// Grouped background color
-        static let grouped = Color(uiColor: .systemGroupedBackground)
+        /// Grouped background - Very subtle gray
+        static let grouped = Color(hex: "F5F5F7")
 
-        /// Secondary grouped background
-        static let secondaryGrouped = Color(uiColor: .secondarySystemGroupedBackground)
+        /// Secondary grouped
+        static let secondaryGrouped = Color(hex: "FFFFFF")
+
+        /// Tertiary grouped
+        static let tertiaryGrouped = Color(hex: "F0F0F2")
+
+        /// Overlay background
+        static let overlay = Color(hex: "000000").opacity(0.4)
     }
 
     // MARK: - Text Colors
 
     enum Text {
-        /// Primary text color
-        static let primary = Color(uiColor: .label)
+        /// Primary text - Pure black
+        static let primary = Color(hex: "000000")
 
-        /// Secondary text color
-        static let secondary = Color(uiColor: .secondaryLabel)
+        /// Secondary text - Dark gray
+        static let secondary = Color(hex: "666666")
 
-        /// Tertiary text color
-        static let tertiary = Color(uiColor: .tertiaryLabel)
+        /// Tertiary text - Medium gray
+        static let tertiary = Color(hex: "8C8C8C")
 
-        /// Quaternary text color
-        static let quaternary = Color(uiColor: .quaternaryLabel)
+        /// Quaternary text - Light gray
+        static let quaternary = Color(hex: "AEAEAE")
 
-        /// Placeholder text color
-        static let placeholder = Color(uiColor: .placeholderText)
+        /// Placeholder text
+        static let placeholder = Color(hex: "C7C7C7")
 
-        /// Disabled text color
-        static let disabled = Color(uiColor: .tertiaryLabel)
+        /// Disabled text
+        static let disabled = Color(hex: "C7C7C7")
+
+        /// Inverse text (white on dark)
+        static let inverse = Color(hex: "FFFFFF")
     }
 
     // MARK: - Border Colors
 
     enum Border {
-        /// Standard border color
-        static let standard = Color(uiColor: .separator)
+        /// Standard border - Subtle gray
+        static let standard = Color(hex: "E5E5E5")
 
-        /// Opaque border color
-        static let opaque = Color(uiColor: .opaqueSeparator)
+        /// Focused border - Primary blue
+        static let focus = Color(hex: "0087FF")
 
-        /// Focus border color
-        static let focus = primary
+        /// Error border - Red
+        static let error = Color(hex: "FF3D00")
 
-        /// Error border color
-        static let error = ColorConstants.error
+        /// Success border - Green
+        static let success = Color(hex: "00C853")
+
+        /// Glass border - White with opacity
+        static let glass = Color.white.opacity(0.3)
     }
 
     // MARK: - Map Colors
 
     enum Map {
-        /// Route polyline color
-        static let route = Color(hex: "007AFF")
+        /// Active route - Primary blue
+        static let route = Color(hex: "0087FF")
 
-        /// Active trip route color
-        static let activeRoute = Color(hex: "34C759")
+        /// Active trip route - Success green
+        static let activeRoute = Color(hex: "00C853")
 
-        /// Completed route color
-        static let completedRoute = Color(hex: "8E8E93")
+        /// Completed route - Secondary gray
+        static let completedRoute = Color(hex: "8C8C8C")
 
-        /// Stop marker color
-        static let stopMarker = Color(hex: "FF9500")
+        /// Stop marker - Warning amber
+        static let stopMarker = Color(hex: "FFB300")
 
-        /// Current location color
-        static let currentLocation = Color(hex: "007AFF")
+        /// Start marker - Success green
+        static let startMarker = Color(hex: "00C853")
 
-        /// Geofence fill color
-        static let geofenceFill = Color(hex: "007AFF").opacity(0.2)
+        /// End marker - Error red
+        static let endMarker = Color(hex: "FF3D00")
 
-        /// Geofence stroke color
-        static let geofenceStroke = Color(hex: "007AFF")
+        /// Current location - Primary blue
+        static let currentLocation = Color(hex: "0087FF")
+
+        /// Geofence fill
+        static let geofenceFill = Color(hex: "0087FF").opacity(0.15)
+
+        /// Geofence stroke
+        static let geofenceStroke = Color(hex: "0087FF")
+    }
+
+    // MARK: - Glass Effect Colors
+
+    enum Glass {
+        /// Glass tint - White base
+        static let tint = Color.white.opacity(0.7)
+
+        /// Glass border
+        static let border = Color.white.opacity(0.4)
+
+        /// Glass shadow
+        static let shadow = Color.black.opacity(0.06)
+
+        /// Frosted glass overlay
+        static let frosted = Color.white.opacity(0.85)
+
+        /// Primary tinted glass
+        static let primaryTint = Color(hex: "0087FF").opacity(0.08)
     }
 }
 
@@ -284,4 +371,11 @@ extension Color {
         let b = Int(components[2] * 255)
         return String(format: "#%02X%02X%02X", r, g, b)
     }
+}
+
+// MARK: - Accent Color Alias
+
+extension Color {
+    /// App accent color shorthand
+    static var accent: Color { ColorConstants.primary }
 }

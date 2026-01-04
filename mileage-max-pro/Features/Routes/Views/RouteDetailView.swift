@@ -138,7 +138,7 @@ struct RouteDetailView: View {
                             .sorted { $0.orderIndex < $1.orderIndex }
                             .map { CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude) }
                         )
-                        .stroke(.blue, lineWidth: 4)
+                        .stroke(ColorConstants.Map.route, lineWidth: 4)
                     }
                 }
                 .mapStyle(.standard(elevation: .realistic, pointsOfInterest: .excludingAll))
@@ -218,11 +218,11 @@ struct RouteDetailView: View {
                         GeometryReader { geometry in
                             ZStack(alignment: .leading) {
                                 RoundedRectangle(cornerRadius: 4)
-                                    .fill(Color(.systemGray5))
+                                    .fill(ColorConstants.Surface.elevated)
                                     .frame(height: 8)
 
                                 RoundedRectangle(cornerRadius: 4)
-                                    .fill(Color.green)
+                                    .fill(ColorConstants.success)
                                     .frame(width: geometry.size.width * progressPercentage, height: 8)
                             }
                         }
@@ -331,10 +331,10 @@ struct RouteDetailView: View {
 
     private var statusColor: Color {
         switch route.status {
-        case .planned: return .blue
-        case .inProgress: return .green
-        case .completed: return .gray
-        case .canceled: return .red
+        case .planned: return ColorConstants.primary
+        case .inProgress: return ColorConstants.success
+        case .completed: return ColorConstants.secondary
+        case .canceled: return ColorConstants.error
         }
     }
 
@@ -419,12 +419,12 @@ struct StopMarker: View {
 
     private var statusColor: Color {
         switch status {
-        case .pending: return .blue
-        case .inTransit: return .yellow
-        case .arrived: return .orange
-        case .completed: return .green
-        case .failed: return .red
-        case .skipped: return .gray
+        case .pending: return ColorConstants.primary
+        case .inTransit: return ColorConstants.warning
+        case .arrived: return ColorConstants.warning
+        case .completed: return ColorConstants.success
+        case .failed: return ColorConstants.error
+        case .skipped: return ColorConstants.secondary
         }
     }
 }
@@ -440,7 +440,7 @@ struct RouteStatItem: View {
         VStack(spacing: 8) {
             Image(systemName: icon)
                 .font(.title2)
-                .foregroundStyle(.blue)
+                .foregroundStyle(ColorConstants.primary)
 
             Text(value)
                 .font(.title2)
@@ -452,7 +452,7 @@ struct RouteStatItem: View {
         }
         .frame(maxWidth: .infinity)
         .padding()
-        .background(Color(.secondarySystemGroupedBackground))
+        .background(ColorConstants.Surface.secondaryGrouped)
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 }
@@ -534,12 +534,12 @@ struct StopRow: View {
 
     private var statusColor: Color {
         switch stop.status {
-        case .pending: return .blue
-        case .inTransit: return .yellow
-        case .arrived: return .orange
-        case .completed: return .green
-        case .failed: return .red
-        case .skipped: return .gray
+        case .pending: return ColorConstants.primary
+        case .inTransit: return ColorConstants.warning
+        case .arrived: return ColorConstants.warning
+        case .completed: return ColorConstants.success
+        case .failed: return ColorConstants.error
+        case .skipped: return ColorConstants.secondary
         }
     }
 }
@@ -719,7 +719,7 @@ struct RouteNavigationView: View {
                     MapPolyline(coordinates: sortedStops.map {
                         CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude)
                     })
-                    .stroke(.blue, lineWidth: 5)
+                    .stroke(ColorConstants.Map.route, lineWidth: 5)
                 }
             }
             .mapStyle(.standard(elevation: .realistic))

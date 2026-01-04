@@ -3,28 +3,36 @@
 //  MileageMaxPro
 //
 //  Enterprise iOS Mileage Tracking Application
+//  Premium Glass + Neomorphic Card Components
 //
 
 import SwiftUI
 
-/// A glassmorphic card component with Liquid Glass styling
+/// Premium glassmorphic card with iOS 26 Liquid Glass + 3D Neomorphism
 struct GlassMorphicCard<Content: View>: View {
     let content: Content
     let cornerRadius: CGFloat
     let padding: EdgeInsets
-    let material: LiquidGlassTheme.GlassMaterial
+    let style: CardStyle
 
     @Environment(\.colorScheme) private var colorScheme
+
+    enum CardStyle {
+        case glass
+        case neomorphic
+        case frosted
+        case elevated
+    }
 
     init(
         cornerRadius: CGFloat = AppTheme.cornerRadiusCard,
         padding: EdgeInsets = Spacing.cardInsets,
-        material: LiquidGlassTheme.GlassMaterial = .regular,
+        style: CardStyle = .glass,
         @ViewBuilder content: () -> Content
     ) {
         self.cornerRadius = cornerRadius
         self.padding = padding
-        self.material = material
+        self.style = style
         self.content = content()
     }
 
@@ -35,27 +43,72 @@ struct GlassMorphicCard<Content: View>: View {
             .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
             .overlay(cardBorder)
             .shadow(
-                color: Color.black.opacity(material.shadowOpacity),
-                radius: material.shadowRadius,
+                color: shadowColor,
+                radius: shadowRadius,
                 x: 0,
-                y: material.shadowRadius / 2
+                y: shadowOffset
             )
     }
 
     @ViewBuilder
     private var cardBackground: some View {
+        switch style {
+        case .glass:
+            glassBackground
+        case .neomorphic:
+            neomorphicBackground
+        case .frosted:
+            frostedBackground
+        case .elevated:
+            elevatedBackground
+        }
+    }
+
+    private var glassBackground: some View {
         ZStack {
-            // Base material
+            // White base
+            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                .fill(ColorConstants.Surface.card)
+
+            // Subtle material overlay
             RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                 .fill(.ultraThinMaterial)
-                .opacity(material.opacity)
+                .opacity(0.3)
 
-            // Highlight gradient
+            // Premium highlight gradient
             RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                 .fill(
                     LinearGradient(
                         colors: [
-                            Color.white.opacity(colorScheme == .dark ? 0.08 : 0.15),
+                            Color.white.opacity(0.5),
+                            Color.white.opacity(0.0)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .center
+                    )
+                )
+        }
+    }
+
+    private var neomorphicBackground: some View {
+        RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+            .fill(ColorConstants.Surface.grouped)
+    }
+
+    private var frostedBackground: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                .fill(ColorConstants.Surface.card)
+
+            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                .fill(.ultraThinMaterial)
+                .opacity(0.5)
+
+            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            Color.white.opacity(0.4),
                             Color.clear
                         ],
                         startPoint: .topLeading,
@@ -65,19 +118,62 @@ struct GlassMorphicCard<Content: View>: View {
         }
     }
 
-    private var cardBorder: some View {
+    private var elevatedBackground: some View {
         RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-            .stroke(
-                LinearGradient(
-                    colors: [
-                        Color.white.opacity(material.borderOpacity),
-                        Color.white.opacity(material.borderOpacity * 0.3)
-                    ],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                ),
-                lineWidth: 1
-            )
+            .fill(ColorConstants.Surface.card)
+    }
+
+    @ViewBuilder
+    private var cardBorder: some View {
+        switch style {
+        case .glass, .frosted:
+            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                .stroke(
+                    LinearGradient(
+                        colors: [
+                            Color.white.opacity(0.4),
+                            Color.white.opacity(0.1)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 1
+                )
+        case .neomorphic:
+            EmptyView()
+        case .elevated:
+            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                .stroke(ColorConstants.Border.standard, lineWidth: 0.5)
+        }
+    }
+
+    private var shadowColor: Color {
+        switch style {
+        case .neomorphic:
+            return ColorConstants.Neomorphic.darkShadow
+        default:
+            return Color.black.opacity(0.08)
+        }
+    }
+
+    private var shadowRadius: CGFloat {
+        switch style {
+        case .glass, .frosted:
+            return 12
+        case .neomorphic:
+            return AppTheme.neomorphicBlur
+        case .elevated:
+            return 16
+        }
+    }
+
+    private var shadowOffset: CGFloat {
+        switch style {
+        case .neomorphic:
+            return AppTheme.neomorphicDarkOffset
+        default:
+            return 4
+        }
     }
 }
 
@@ -108,17 +204,20 @@ struct TintedGlassCard<Content: View>: View {
             .padding(padding)
             .background(
                 ZStack {
+                    // White base
                     RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                        .fill(.ultraThinMaterial)
+                        .fill(ColorConstants.Surface.card)
 
+                    // Tint overlay
                     RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                        .fill(tint.opacity(colorScheme == .dark ? 0.15 : 0.1))
+                        .fill(tint.opacity(0.06))
 
+                    // Highlight gradient
                     RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                         .fill(
                             LinearGradient(
                                 colors: [
-                                    Color.white.opacity(0.1),
+                                    Color.white.opacity(0.5),
                                     Color.clear
                                 ],
                                 startPoint: .topLeading,
@@ -130,9 +229,9 @@ struct TintedGlassCard<Content: View>: View {
             .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .stroke(tint.opacity(0.3), lineWidth: 1)
+                    .stroke(tint.opacity(0.2), lineWidth: 1)
             )
-            .shadow(color: tint.opacity(0.2), radius: 10, x: 0, y: 5)
+            .shadow(color: tint.opacity(0.15), radius: 12, x: 0, y: 4)
     }
 }
 
@@ -167,10 +266,10 @@ struct InteractiveGlassCard<Content: View>: View {
                 .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
                 .overlay(cardBorder)
                 .shadow(
-                    color: Color.black.opacity(isPressed ? 0.05 : 0.1),
-                    radius: isPressed ? 4 : 10,
+                    color: Color.black.opacity(isPressed ? 0.04 : 0.08),
+                    radius: isPressed ? 4 : 12,
                     x: 0,
-                    y: isPressed ? 2 : 5
+                    y: isPressed ? 2 : 4
                 )
                 .scaleEffect(isPressed ? 0.98 : 1.0)
         }
@@ -178,12 +277,12 @@ struct InteractiveGlassCard<Content: View>: View {
         .simultaneousGesture(
             DragGesture(minimumDistance: 0)
                 .onChanged { _ in
-                    withAnimation(.spring(response: 0.2, dampingFraction: 0.8)) {
+                    withAnimation(.quickResponse) {
                         isPressed = true
                     }
                 }
                 .onEnded { _ in
-                    withAnimation(.spring(response: 0.25, dampingFraction: 0.7)) {
+                    withAnimation(.premiumSpring) {
                         isPressed = false
                     }
                 }
@@ -194,13 +293,13 @@ struct InteractiveGlassCard<Content: View>: View {
     private var cardBackground: some View {
         ZStack {
             RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                .fill(.ultraThinMaterial)
+                .fill(ColorConstants.Surface.card)
 
             RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                 .fill(
                     LinearGradient(
                         colors: [
-                            Color.white.opacity(colorScheme == .dark ? 0.08 : 0.15),
+                            Color.white.opacity(isPressed ? 0.3 : 0.5),
                             Color.clear
                         ],
                         startPoint: .topLeading,
@@ -215,8 +314,8 @@ struct InteractiveGlassCard<Content: View>: View {
             .stroke(
                 LinearGradient(
                     colors: [
-                        Color.white.opacity(0.2),
-                        Color.white.opacity(0.05)
+                        Color.white.opacity(0.4),
+                        Color.white.opacity(0.1)
                     ],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
@@ -248,16 +347,22 @@ struct HeaderGlassCard<Header: View, Content: View>: View {
             header
                 .padding(Spacing.cardInsets)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color.white.opacity(0.05))
+                .background(ColorConstants.primaryLight)
 
             Divider()
-                .opacity(0.2)
+                .opacity(0.3)
 
             content
                 .padding(Spacing.cardInsets)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .liquidGlassStyle(cornerRadius: cornerRadius)
+        .background(ColorConstants.Surface.card)
+        .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                .stroke(ColorConstants.Border.standard, lineWidth: 0.5)
+        )
+        .cardShadow()
     }
 }
 
@@ -284,7 +389,7 @@ struct ExpandableGlassCard<Header: View, Content: View>: View {
     var body: some View {
         VStack(spacing: 0) {
             Button(action: {
-                withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
+                withAnimation(.premiumSpring) {
                     isExpanded.toggle()
                 }
                 HapticManager.shared.selection()
@@ -303,39 +408,123 @@ struct ExpandableGlassCard<Header: View, Content: View>: View {
 
             if isExpanded {
                 Divider()
-                    .opacity(0.2)
+                    .padding(.horizontal, Spacing.md)
+                    .opacity(0.3)
 
                 content
                     .padding(Spacing.cardInsets)
                     .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
-        .liquidGlassStyle(cornerRadius: cornerRadius)
+        .background(ColorConstants.Surface.card)
+        .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                .stroke(ColorConstants.Border.standard, lineWidth: 0.5)
+        )
+        .cardShadow()
+    }
+}
+
+// MARK: - Feature Card (Hero Style)
+
+struct FeatureCard<Content: View>: View {
+    let title: String
+    let subtitle: String?
+    let icon: String
+    let iconColor: Color
+    let content: Content
+
+    init(
+        title: String,
+        subtitle: String? = nil,
+        icon: String,
+        iconColor: Color = ColorConstants.primary,
+        @ViewBuilder content: () -> Content
+    ) {
+        self.title = title
+        self.subtitle = subtitle
+        self.icon = icon
+        self.iconColor = iconColor
+        self.content = content()
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: Spacing.md) {
+            HStack(spacing: Spacing.md) {
+                // Icon with background
+                Image(systemName: icon)
+                    .font(.system(size: 24, weight: .semibold))
+                    .foregroundStyle(iconColor)
+                    .frame(width: 48, height: 48)
+                    .background(
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            .fill(iconColor.opacity(0.1))
+                    )
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .font(Typography.headline)
+                        .foregroundStyle(ColorConstants.Text.primary)
+
+                    if let subtitle = subtitle {
+                        Text(subtitle)
+                            .font(Typography.subheadline)
+                            .foregroundStyle(ColorConstants.Text.secondary)
+                    }
+                }
+
+                Spacer()
+            }
+
+            content
+        }
+        .padding(Spacing.lg)
+        .background(ColorConstants.Surface.card)
+        .clipShape(RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge, style: .continuous)
+                .stroke(ColorConstants.Border.standard, lineWidth: 0.5)
+        )
+        .cardShadow()
     }
 }
 
 // MARK: - Preview
 
-#Preview("Glass Cards") {
+#Preview("Premium Cards") {
     ScrollView {
         VStack(spacing: Spacing.cardGap) {
             GlassMorphicCard {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Glass Card")
                         .font(Typography.headline)
-                    Text("This is a glassmorphic card with Liquid Glass styling.")
+                        .foregroundStyle(ColorConstants.Text.primary)
+                    Text("Premium glassmorphic card with Liquid Glass styling.")
                         .font(Typography.body)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(ColorConstants.Text.secondary)
                 }
             }
 
-            TintedGlassCard(tint: .blue) {
+            GlassMorphicCard(style: .neomorphic) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Neomorphic Card")
+                        .font(Typography.headline)
+                        .foregroundStyle(ColorConstants.Text.primary)
+                    Text("3D neomorphic style with soft shadows.")
+                        .font(Typography.body)
+                        .foregroundStyle(ColorConstants.Text.secondary)
+                }
+            }
+
+            TintedGlassCard(tint: ColorConstants.primary) {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Tinted Card")
                         .font(Typography.headline)
+                        .foregroundStyle(ColorConstants.Text.primary)
                     Text("This card has a blue tint.")
                         .font(Typography.body)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(ColorConstants.Text.secondary)
                 }
             }
 
@@ -344,22 +533,33 @@ struct ExpandableGlassCard<Header: View, Content: View>: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Interactive Card")
                             .font(Typography.headline)
+                            .foregroundStyle(ColorConstants.Text.primary)
                         Text("Tap me!")
                             .font(Typography.subheadline)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(ColorConstants.Text.secondary)
                     }
                     Spacer()
                     Image(systemName: "chevron.right")
-                        .foregroundStyle(.tertiary)
+                        .foregroundStyle(ColorConstants.Text.tertiary)
                 }
+            }
+
+            FeatureCard(
+                title: "Premium Feature",
+                subtitle: "Unlock all benefits",
+                icon: "star.fill",
+                iconColor: ColorConstants.primary
+            ) {
+                Text("Feature content goes here")
+                    .font(Typography.body)
+                    .foregroundStyle(ColorConstants.Text.secondary)
             }
         }
         .padding()
     }
-    .background(Color(uiColor: .systemGroupedBackground))
+    .background(ColorConstants.Surface.grouped)
 }
 
 // MARK: - Type Aliases
 
-/// Alias for GlassMorphicCard for backward compatibility
 typealias GlassCard = GlassMorphicCard

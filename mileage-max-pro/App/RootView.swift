@@ -8,35 +8,23 @@
 import SwiftUI
 import SwiftData
 import AuthenticationServices
+import CoreLocation
 import os
 
 /// Root view that handles navigation based on authentication state
 struct RootView: View {
 
     @EnvironmentObject private var authService: AuthenticationService
+    @EnvironmentObject private var locationService: LocationTrackingService
     @EnvironmentObject private var networkMonitor: NetworkMonitor
 
     @State private var showSplash = true
 
     var body: some View {
         ZStack {
-            // Main content based on auth state
-            switch authService.authState {
-            case .unknown:
-                SplashView()
-
-            case .unauthenticated:
-                AuthenticationView()
-                    .transition(.opacity)
-
-            case .onboarding:
-                OnboardingView()
-                    .transition(.opacity)
-
-            case .authenticated:
-                MainTabView()
-                    .transition(.opacity)
-            }
+            // BYPASS AUTH - Go straight to main app
+            MainTabView()
+                .transition(.opacity)
 
             // Splash overlay
             if showSplash {
@@ -48,6 +36,9 @@ struct RootView: View {
         .animation(.easeInOut(duration: 0.3), value: authService.authState)
         .offlineBanner()
         .onAppear {
+            // Initialize location services
+            initializeLocationServices()
+
             // Dismiss splash after delay
             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                 withAnimation {
@@ -55,60 +46,146 @@ struct RootView: View {
                 }
             }
         }
+        .onChange(of: locationService.authorizationStatus) { _, newStatus in
+            // Start monitoring when permission is granted
+            if newStatus == .authorizedWhenInUse || newStatus == .authorizedAlways {
+                if locationService.trackingState == .idle {
+                    locationService.startMonitoring()
+                }
+            }
+        }
+    }
+
+    private func initializeLocationServices() {
+        // Request location permission if not determined
+        if locationService.authorizationStatus == .notDetermined {
+            locationService.requestAuthorization()
+        } else if locationService.hasAnyAuthorization {
+            // Start monitoring if we already have permission
+            locationService.startMonitoring()
+        }
     }
 }
 
-// MARK: - Splash View
+// MARK: - Premium Splash View
 
 struct SplashView: View {
-    @State private var logoScale: CGFloat = 0.8
+    @State private var logoScale: CGFloat = 0.6
     @State private var logoOpacity: CGFloat = 0
+    @State private var textOpacity: CGFloat = 0
+    @State private var taglineOpacity: CGFloat = 0
+    @State private var ringRotation: Double = 0
+    @State private var glowOpacity: CGFloat = 0
 
     var body: some View {
         ZStack {
-            // Background gradient
-            LinearGradient(
+            // Premium white background
+            ColorConstants.background
+                .ignoresSafeArea()
+
+            // Subtle radial gradient
+            RadialGradient(
                 colors: [
-                    ColorConstants.primary,
-                    ColorConstants.secondary
+                    ColorConstants.primary.opacity(0.08),
+                    ColorConstants.background
                 ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
+                center: .center,
+                startRadius: 100,
+                endRadius: 400
             )
             .ignoresSafeArea()
 
             VStack(spacing: Spacing.xl) {
-                // Logo
-                Image(systemName: "car.fill")
-                    .font(.system(size: 80, weight: .bold))
-                    .foregroundStyle(.white)
-                    .scaleEffect(logoScale)
-                    .opacity(logoOpacity)
+                Spacer()
 
-                // App name
-                VStack(spacing: Spacing.xs) {
-                    Text("MileageMax")
-                        .font(.system(size: 42, weight: .bold, design: .rounded))
+                // Logo with animated ring
+                ZStack {
+                    // Outer glow ring
+                    Circle()
+                        .stroke(
+                            LinearGradient(
+                                colors: [ColorConstants.primary.opacity(0.3), ColorConstants.primary.opacity(0.1)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            lineWidth: 3
+                        )
+                        .frame(width: 140, height: 140)
+                        .rotationEffect(.degrees(ringRotation))
+                        .opacity(glowOpacity)
+
+                    // Inner circle background
+                    Circle()
+                        .fill(
+                            LinearGradient(
+                                colors: [ColorConstants.primary, ColorConstants.primary.opacity(0.8)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 120, height: 120)
+                        .shadow(color: ColorConstants.primary.opacity(0.4), radius: 20, x: 0, y: 10)
+
+                    // Car icon
+                    Image(systemName: "car.fill")
+                        .font(.system(size: 50, weight: .bold))
                         .foregroundStyle(.white)
-
-                    Text("Pro")
-                        .font(.system(size: 24, weight: .medium, design: .rounded))
-                        .foregroundStyle(.white.opacity(0.8))
                 }
+                .scaleEffect(logoScale)
                 .opacity(logoOpacity)
+
+                // App name with premium typography
+                VStack(spacing: 4) {
+                    Text("MileageMax")
+                        .font(.system(size: 38, weight: .bold, design: .rounded))
+                        .foregroundStyle(ColorConstants.Text.primary)
+                        .tracking(-0.5)
+
+                    Text("PRO")
+                        .font(.system(size: 16, weight: .bold, design: .rounded))
+                        .foregroundStyle(ColorConstants.primary)
+                        .tracking(4)
+                }
+                .opacity(textOpacity)
 
                 // Tagline
                 Text("Track Every Mile. Maximize Every Deduction.")
                     .font(Typography.subheadline)
-                    .foregroundStyle(.white.opacity(0.7))
+                    .foregroundStyle(ColorConstants.Text.secondary)
                     .multilineTextAlignment(.center)
-                    .opacity(logoOpacity)
+                    .opacity(taglineOpacity)
+
+                Spacer()
+
+                // Bottom branding
+                VStack(spacing: Spacing.xs) {
+                    Text("Enterprise Mileage Tracking")
+                        .font(Typography.caption2)
+                        .foregroundStyle(ColorConstants.Text.tertiary)
+                }
+                .opacity(taglineOpacity)
+                .padding(.bottom, Spacing.xl)
             }
+            .padding(.horizontal, Spacing.xl)
         }
         .onAppear {
-            withAnimation(.spring(response: 0.6, dampingFraction: 0.7)) {
+            // Staggered animations for premium feel
+            withAnimation(.spring(response: 0.8, dampingFraction: 0.6)) {
                 logoScale = 1.0
                 logoOpacity = 1.0
+            }
+
+            withAnimation(.easeOut(duration: 0.6).delay(0.3)) {
+                textOpacity = 1.0
+            }
+
+            withAnimation(.easeOut(duration: 0.6).delay(0.5)) {
+                taglineOpacity = 1.0
+                glowOpacity = 1.0
+            }
+
+            withAnimation(.linear(duration: 8).repeatForever(autoreverses: false)) {
+                ringRotation = 360
             }
         }
     }
@@ -118,41 +195,52 @@ struct SplashView: View {
 
 struct MainTabView: View {
     @State private var selectedTab = 0
+    @State private var showingActiveTrip = false
     @EnvironmentObject private var locationService: LocationTrackingService
 
     var body: some View {
-        ZStack(alignment: .bottom) {
-            TabView(selection: $selectedTab) {
-                DashboardView()
-                    .tag(0)
+        TabView(selection: $selectedTab) {
+            DashboardView()
+                .tabItem {
+                    Label("Home", systemImage: "house.fill")
+                }
+                .tag(0)
 
-                TripsListView()
-                    .tag(1)
+            TripsListView()
+                .tabItem {
+                    Label("Trips", systemImage: "car.fill")
+                }
+                .tag(1)
 
-                RoutesListView()
-                    .tag(2)
+            RoutesListView()
+                .tabItem {
+                    Label("Routes", systemImage: "map.fill")
+                }
+                .tag(2)
 
-                ReportsView()
-                    .tag(3)
+            ReportsView()
+                .tabItem {
+                    Label("Reports", systemImage: "chart.bar.fill")
+                }
+                .tag(3)
 
-                SettingsView()
-                    .tag(4)
-            }
-            .tabViewStyle(.page(indexDisplayMode: .never))
-
-            // Custom tab bar
-            GlassTabBar(
-                selectedTab: $selectedTab,
-                tabs: [
-                    ("house.fill", "Home"),
-                    ("car.fill", "Trips"),
-                    ("map.fill", "Routes"),
-                    ("chart.bar.fill", "Reports"),
-                    ("gearshape.fill", "Settings")
-                ]
-            )
+            SettingsView()
+                .tabItem {
+                    Label("Settings", systemImage: "gearshape.fill")
+                }
+                .tag(4)
         }
-        .ignoresSafeArea(.keyboard)
+        .fullScreenCover(isPresented: $showingActiveTrip) {
+            ActiveTripView()
+        }
+        .onChange(of: locationService.trackingState) { _, newState in
+            // Show ActiveTripView when tracking starts
+            if newState == .tracking {
+                showingActiveTrip = true
+            } else if newState == .monitoring || newState == .idle {
+                showingActiveTrip = false
+            }
+        }
         .onReceive(NotificationCenter.default.publisher(for: .navigateToTrip)) { notification in
             if let _ = notification.userInfo?["tripId"] as? String {
                 selectedTab = 1

@@ -104,6 +104,11 @@ final class RoutesViewModel: ObservableObject {
     }
 
     private func syncRoutes() async {
+        // Only sync if authenticated
+        guard AuthenticationService.shared.authState == .authenticated else {
+            return
+        }
+
         do {
             let response: [RouteResponse] = try await apiClient.request(RouteEndpoints.list(pagination: PaginationParameters(), status: nil))
 
