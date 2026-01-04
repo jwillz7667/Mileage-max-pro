@@ -8,6 +8,7 @@
 import SwiftUI
 import SwiftData
 import AuthenticationServices
+import os
 
 /// Root view that handles navigation based on authentication state
 struct RootView: View {
@@ -175,6 +176,8 @@ struct MainTabView: View {
 struct AuthenticationView: View {
     @EnvironmentObject private var authService: AuthenticationService
     @State private var showingEmailAuth = false
+    @State private var errorMessage: String?
+    @State private var showingError = false
 
     var body: some View {
         VStack(spacing: Spacing.xl) {
@@ -200,14 +203,19 @@ struct AuthenticationView: View {
             // Sign in buttons
             VStack(spacing: Spacing.md) {
                 // Sign in with Apple
-                SignInWithAppleButton()
-                    .frame(height: 52)
-                    .cornerRadius(26)
-                    .onTapGesture {
-                        Task {
-                            try? await authService.signInWithApple()
+                SignInWithAppleButton {
+                    Task {
+                        do {
+                            try await authService.signInWithApple()
+                        } catch {
+                            errorMessage = error.localizedDescription
+                            showingError = true
+                            AppLogger.auth.error("Sign in with Apple failed: \(error.localizedDescription)")
                         }
                     }
+                }
+                .frame(height: 52)
+                .cornerRadius(26)
 
                 // Sign in with Google (placeholder)
                 GlassButton("Continue with Google", icon: "g.circle.fill", style: .secondary, size: .fullWidth) {
@@ -232,18 +240,41 @@ struct AuthenticationView: View {
         .sheet(isPresented: $showingEmailAuth) {
             EmailAuthSheet()
         }
+        .alert("Sign In Failed", isPresented: $showingError) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(errorMessage ?? "An unknown error occurred. Please try again.")
+        }
     }
 }
 
 struct SignInWithAppleButton: UIViewRepresentable {
+    var onRequest: () -> Void
+
     func makeUIView(context: Context) -> ASAuthorizationAppleIDButton {
         let button = ASAuthorizationAppleIDButton(type: .signIn, style: .black)
-        // Disable autoresizing mask to prevent constraint conflicts with SwiftUI layout
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(context.coordinator, action: #selector(Coordinator.buttonTapped), for: .touchUpInside)
         return button
     }
 
     func updateUIView(_ uiView: ASAuthorizationAppleIDButton, context: Context) {}
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(onRequest: onRequest)
+    }
+
+    class Coordinator: NSObject {
+        var onRequest: () -> Void
+
+        init(onRequest: @escaping () -> Void) {
+            self.onRequest = onRequest
+        }
+
+        @objc func buttonTapped() {
+            onRequest()
+        }
+    }
 }
 
 struct OnboardingView: View {
