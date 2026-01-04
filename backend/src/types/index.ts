@@ -72,12 +72,12 @@ export interface GoogleAuthRequest {
 }
 
 export interface AuthResponse {
-  accessToken: string;
-  refreshToken: string;
-  tokenType: 'Bearer';
-  expiresIn: number;
+  access_token: string;
+  refresh_token: string;
+  token_type: 'Bearer';
+  expires_in: number;
   user: UserProfile;
-  isNewUser: boolean;
+  is_new_user: boolean;
 }
 
 export interface UserProfile {

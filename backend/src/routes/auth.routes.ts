@@ -43,7 +43,7 @@ router.post(
       pushToken: req.body.pushToken,
     });
 
-    const statusCode = result.isNewUser ? 201 : 200;
+    const statusCode = result.is_new_user ? 201 : 200;
     const response: ApiResponse<AuthResponse> = {
       success: true,
       data: result,
@@ -70,7 +70,7 @@ router.post(
       pushToken: req.body.pushToken,
     });
 
-    const statusCode = result.isNewUser ? 201 : 200;
+    const statusCode = result.is_new_user ? 201 : 200;
     const response: ApiResponse<AuthResponse> = {
       success: true,
       data: result,

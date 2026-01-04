@@ -253,12 +253,12 @@ export async function authenticateWithApple(request: AppleAuthRequest): Promise<
   });
 
   return {
-    accessToken,
-    refreshToken,
-    tokenType: 'Bearer',
-    expiresIn,
+    access_token: accessToken,
+    refresh_token: refreshToken,
+    token_type: 'Bearer',
+    expires_in: expiresIn,
     user: formatUserProfile(user),
-    isNewUser,
+    is_new_user: isNewUser,
   };
 }
 
@@ -320,12 +320,12 @@ export async function authenticateWithGoogle(request: GoogleAuthRequest): Promis
   });
 
   return {
-    accessToken,
-    refreshToken,
-    tokenType: 'Bearer',
-    expiresIn,
+    access_token: accessToken,
+    refresh_token: refreshToken,
+    token_type: 'Bearer',
+    expires_in: expiresIn,
     user: formatUserProfile(user),
-    isNewUser,
+    is_new_user: isNewUser,
   };
 }
 
