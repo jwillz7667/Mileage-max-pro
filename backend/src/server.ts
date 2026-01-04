@@ -91,7 +91,14 @@ app.use('/api', rateLimiter);
 
 // Health check endpoints
 app.get('/health', (_req, res) => {
+  console.log('Health check hit');
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// Debug: Log all incoming requests
+app.use((req, _res, next) => {
+  console.log(`[DEBUG] ${req.method} ${req.path} from ${req.ip}`);
+  next();
 });
 
 app.get('/ready', async (_req, res) => {
