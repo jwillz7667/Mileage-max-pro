@@ -88,6 +88,50 @@ function validateEnv() {
 
 export const env = validateEnv();
 
+/**
+ * Normalize PEM private key from various env var formats:
+ * - Literal \n characters (common in env vars)
+ * - Base64 encoded (alternative for problematic environments)
+ * - Already properly formatted with real newlines
+ */
+function normalizePrivateKey(key: string): string {
+  // If it looks base64 encoded (no spaces, dashes, or newlines), decode it
+  if (!key.includes('-') && !key.includes(' ') && !key.includes('\n')) {
+    try {
+      const decoded = Buffer.from(key, 'base64').toString('utf-8');
+      if (decoded.includes('-----BEGIN')) {
+        console.log('Apple private key decoded from base64');
+        return decoded;
+      }
+    } catch {
+      // Not base64, continue with other methods
+    }
+  }
+
+  // Replace literal \n with actual newlines
+  let normalized = key.replace(/\\n/g, '\n');
+
+  // Handle double-escaped newlines (\\n -> \n)
+  normalized = normalized.replace(/\\\\n/g, '\n');
+
+  // Ensure proper PEM format with newlines after header and before footer
+  if (normalized.includes('-----BEGIN') && !normalized.includes('\n-----BEGIN')) {
+    normalized = normalized
+      .replace(/-----BEGIN PRIVATE KEY-----/, '-----BEGIN PRIVATE KEY-----\n')
+      .replace(/-----END PRIVATE KEY-----/, '\n-----END PRIVATE KEY-----');
+  }
+
+  // Remove any carriage returns
+  normalized = normalized.replace(/\r/g, '');
+
+  // Validate the key looks correct
+  if (!normalized.includes('-----BEGIN PRIVATE KEY-----')) {
+    console.error('Apple private key appears malformed - missing BEGIN header');
+  }
+
+  return normalized;
+}
+
 export const config = {
   server: {
     env: env.NODE_ENV,
@@ -113,7 +157,7 @@ export const config = {
     teamId: env.APPLE_TEAM_ID,
     keyId: env.APPLE_KEY_ID,
     bundleId: env.APPLE_BUNDLE_ID,
-    privateKey: env.APPLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+    privateKey: normalizePrivateKey(env.APPLE_PRIVATE_KEY),
   },
   google: {
     clientId: env.GOOGLE_CLIENT_ID,
@@ -141,7 +185,7 @@ export const config = {
   mapkit: {
     teamId: env.MAPKIT_TEAM_ID,
     keyId: env.MAPKIT_KEY_ID,
-    privateKey: env.MAPKIT_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+    privateKey: env.MAPKIT_PRIVATE_KEY ? normalizePrivateKey(env.MAPKIT_PRIVATE_KEY) : undefined,
   },
   s3: {
     bucket: env.S3_BUCKET,
