@@ -36,9 +36,10 @@ export async function connectRedis(): Promise<void> {
     return;
   }
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const timeout = setTimeout(() => {
-      reject(new Error('Redis connection timeout'));
+      console.warn('Redis connection timeout - continuing without Redis');
+      resolve();
     }, 10000);
 
     redis.once('ready', () => {
@@ -48,7 +49,8 @@ export async function connectRedis(): Promise<void> {
 
     redis.once('error', (error) => {
       clearTimeout(timeout);
-      reject(error);
+      console.warn('Redis connection failed - continuing without Redis:', error);
+      resolve();
     });
   });
 }
