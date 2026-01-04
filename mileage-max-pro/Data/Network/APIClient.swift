@@ -42,7 +42,7 @@ final class APIClient: ObservableObject {
 
     private init(
         session: URLSession = .shared,
-        baseURL: URL = APIConstants.baseURL
+        baseURL: URL = APIConstants.fullBaseURL
     ) {
         self.session = session
         self.baseURL = baseURL
