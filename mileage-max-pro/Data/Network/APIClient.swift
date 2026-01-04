@@ -125,10 +125,12 @@ final class APIClient: ObservableObject {
 
     // MARK: - Request Methods
 
-    /// Perform a request and decode the response
+    /// Perform a request and decode the response (unwraps from API envelope)
     func request<T: Decodable>(_ endpoint: APIEndpoint) async throws -> T {
         let data = try await performRequest(endpoint)
-        return try decode(data)
+        // Backend wraps all responses in { success: bool, data: T }
+        let envelope: APIEnvelope<T> = try decode(data)
+        return envelope.data
     }
 
     /// Perform a request and return raw data
@@ -340,6 +342,12 @@ final class APIClient: ObservableObject {
 }
 
 // MARK: - Response Types
+
+/// Backend wraps all responses in this envelope
+struct APIEnvelope<T: Decodable>: Decodable {
+    let success: Bool
+    let data: T
+}
 
 struct TokenResponse: Codable {
     let accessToken: String
