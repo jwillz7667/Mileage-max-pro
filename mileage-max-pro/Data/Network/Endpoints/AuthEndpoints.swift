@@ -12,11 +12,11 @@ enum AuthEndpoints {
 
     // MARK: - Sign In with Apple
 
-    case signInWithApple(identityToken: String, authorizationCode: String, firstName: String?, lastName: String?)
+    case signInWithApple(request: AppleSignInRequest)
 
     // MARK: - Sign In with Google
 
-    case signInWithGoogle(idToken: String)
+    case signInWithGoogle(request: GoogleSignInRequest)
 
     // MARK: - Email Authentication
 
@@ -29,7 +29,7 @@ enum AuthEndpoints {
 
     // MARK: - Token Management
 
-    case refreshToken(refreshToken: String)
+    case refreshToken(refreshToken: String, deviceId: String)
     case revokeToken
 
     // MARK: - Session
@@ -86,16 +86,11 @@ extension AuthEndpoints: APIEndpoint {
 
     var body: Encodable? {
         switch self {
-        case .signInWithApple(let identityToken, let authorizationCode, let firstName, let lastName):
-            return AppleSignInRequest(
-                identityToken: identityToken,
-                authorizationCode: authorizationCode,
-                firstName: firstName,
-                lastName: lastName
-            )
+        case .signInWithApple(let request):
+            return request
 
-        case .signInWithGoogle(let idToken):
-            return GoogleSignInRequest(idToken: idToken)
+        case .signInWithGoogle(let request):
+            return request
 
         case .registerWithEmail(let email, let password, let firstName, let lastName):
             return EmailRegisterRequest(
@@ -117,8 +112,8 @@ extension AuthEndpoints: APIEndpoint {
         case .resendVerificationEmail(let email):
             return ResendVerificationRequest(email: email)
 
-        case .refreshToken(let refreshToken):
-            return RefreshTokenRequest(refreshToken: refreshToken)
+        case .refreshToken(let refreshToken, let deviceId):
+            return RefreshTokenRequest(refreshToken: refreshToken, deviceId: deviceId)
 
         case .deleteAccount(let confirmation):
             return DeleteAccountRequest(confirmation: confirmation)
@@ -153,12 +148,34 @@ extension AuthEndpoints: APIEndpoint {
 struct AppleSignInRequest: Codable {
     let identityToken: String
     let authorizationCode: String
-    let firstName: String?
-    let lastName: String?
+    let user: AppleUserInfo?
+    let deviceId: String
+    let deviceName: String?
+    let deviceModel: String?
+    let osVersion: String?
+    let appVersion: String?
+    let pushToken: String?
+
+    struct AppleUserInfo: Codable {
+        let email: String?
+        let name: AppleName?
+
+        struct AppleName: Codable {
+            let firstName: String?
+            let lastName: String?
+        }
+    }
 }
 
 struct GoogleSignInRequest: Codable {
     let idToken: String
+    let accessToken: String
+    let deviceId: String
+    let deviceName: String?
+    let deviceModel: String?
+    let osVersion: String?
+    let appVersion: String?
+    let pushToken: String?
 }
 
 struct EmailRegisterRequest: Codable {
@@ -188,6 +205,7 @@ struct ResendVerificationRequest: Codable {
 
 struct RefreshTokenRequest: Codable {
     let refreshToken: String
+    let deviceId: String
 }
 
 struct DeleteAccountRequest: Codable {

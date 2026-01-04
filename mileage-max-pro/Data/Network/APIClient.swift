@@ -73,7 +73,7 @@ final class APIClient: ObservableObject {
         // Configure encoder
         self.encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
-        encoder.keyEncodingStrategy = .convertToSnakeCase
+        // Note: Backend expects camelCase, so don't convert to snake_case
 
         // Load stored tokens
         loadStoredTokens()

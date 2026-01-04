@@ -80,22 +80,41 @@ final class AuthenticationService: NSObject, ObservableObject {
             throw AuthError.invalidCredentials
         }
 
-        // Get name if available (only on first sign in)
+        // Get name and email if available (only on first sign in)
         let firstName = appleCredential.fullName?.givenName
         let lastName = appleCredential.fullName?.familyName
+        let email = appleCredential.email
 
-        // Authenticate with backend
-        let endpoint = AuthEndpoints.signInWithApple(
+        // Build user info if we have any data
+        var userInfo: AppleSignInRequest.AppleUserInfo? = nil
+        if email != nil || firstName != nil || lastName != nil {
+            let name = (firstName != nil || lastName != nil)
+                ? AppleSignInRequest.AppleUserInfo.AppleName(firstName: firstName, lastName: lastName)
+                : nil
+            userInfo = AppleSignInRequest.AppleUserInfo(email: email, name: name)
+        }
+
+        // Build request with device info
+        let request = AppleSignInRequest(
             identityToken: identityToken,
             authorizationCode: authorizationCode,
-            firstName: firstName,
-            lastName: lastName
+            user: userInfo,
+            deviceId: DeviceInfo.deviceId,
+            deviceName: DeviceInfo.deviceName,
+            deviceModel: DeviceInfo.deviceModel,
+            osVersion: DeviceInfo.osVersion,
+            appVersion: AppConstants.appVersion,
+            pushToken: PushNotificationManager.shared.currentToken
         )
 
+        let endpoint = AuthEndpoints.signInWithApple(request: request)
         let response: AuthResponse = try await apiClient.request(endpoint)
 
         // Store tokens
         apiClient.setTokens(accessToken: response.accessToken, refreshToken: response.refreshToken)
+
+        // Store Apple user identifier for credential state checks
+        UserDefaults.standard.set(appleCredential.user, forKey: "appleUserIdentifier")
 
         // Update state
         currentUser = User.from(dto: response.user)
