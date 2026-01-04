@@ -154,7 +154,7 @@ extension APIEndpoint {
     private func encodeJSON(_ encodable: Encodable) throws -> Data {
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
-        encoder.keyEncodingStrategy = .convertToSnakeCase
+        // Backend expects camelCase keys, NOT snake_case
 
         do {
             return try encoder.encode(AnyEncodable(encodable))
