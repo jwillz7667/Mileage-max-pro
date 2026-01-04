@@ -168,14 +168,18 @@ router.get(
       data: {
         id: authReq.user.id,
         email: authReq.user.email,
-        emailVerified: true, // If they're authenticated, email is verified
-        fullName: authReq.user.fullName,
-        avatarUrl: authReq.user.avatarUrl,
+        email_verified: true, // If they're authenticated, email is verified
+        full_name: authReq.user.fullName,
+        avatar_url: authReq.user.avatarUrl,
+        phone_number: null,
+        phone_verified: false,
         timezone: authReq.user.timezone,
         locale: authReq.user.locale,
-        subscriptionTier: authReq.user.subscriptionTier,
-        subscriptionStatus: 'active',
-        createdAt: new Date().toISOString(),
+        subscription_tier: authReq.user.subscriptionTier,
+        subscription_status: 'active',
+        trial_ends_at: null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       },
     };
 
@@ -198,14 +202,18 @@ router.patch(
       data: {
         id: updatedUser.id,
         email: updatedUser.email,
-        emailVerified: updatedUser.emailVerified,
-        fullName: updatedUser.fullName,
-        avatarUrl: updatedUser.avatarUrl,
+        email_verified: updatedUser.emailVerified,
+        full_name: updatedUser.fullName,
+        avatar_url: updatedUser.avatarUrl,
+        phone_number: updatedUser.phoneNumber,
+        phone_verified: updatedUser.phoneVerified,
         timezone: updatedUser.timezone,
         locale: updatedUser.locale,
-        subscriptionTier: updatedUser.subscriptionTier,
-        subscriptionStatus: updatedUser.subscriptionStatus,
-        createdAt: updatedUser.createdAt.toISOString(),
+        subscription_tier: updatedUser.subscriptionTier,
+        subscription_status: updatedUser.subscriptionStatus,
+        trial_ends_at: updatedUser.trialEndsAt?.toISOString() ?? null,
+        created_at: updatedUser.createdAt.toISOString(),
+        updated_at: updatedUser.updatedAt.toISOString(),
       },
     };
 

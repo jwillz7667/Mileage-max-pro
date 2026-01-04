@@ -83,14 +83,18 @@ export interface AuthResponse {
 export interface UserProfile {
   id: string;
   email: string;
-  emailVerified: boolean;
-  fullName: string;
-  avatarUrl: string | null;
+  email_verified: boolean;
+  full_name: string;
+  avatar_url: string | null;
+  phone_number: string | null;
+  phone_verified: boolean;
   timezone: string;
   locale: string;
-  subscriptionTier: SubscriptionTier;
-  subscriptionStatus: string;
-  createdAt: string;
+  subscription_tier: SubscriptionTier;
+  subscription_status: string;
+  trial_ends_at: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
 // ============================================================================

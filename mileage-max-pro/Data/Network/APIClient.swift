@@ -68,7 +68,7 @@ final class APIClient: ObservableObject {
 
             throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid date format: \(dateString)")
         }
-        // Backend sends camelCase keys, so no conversion needed
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
 
         // Configure encoder
         self.encoder = JSONEncoder()

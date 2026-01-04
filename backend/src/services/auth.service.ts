@@ -23,17 +23,22 @@ import type { User, Session, AuthProvider } from '@prisma/client';
 const SESSION_TTL_SECONDS = 30 * 24 * 60 * 60; // 30 days
 
 function formatUserProfile(user: User): UserProfile {
+  // Return snake_case keys to match iOS client expectations
   return {
     id: user.id,
     email: user.email,
-    emailVerified: user.emailVerified,
-    fullName: user.fullName,
-    avatarUrl: user.avatarUrl,
+    email_verified: user.emailVerified,
+    full_name: user.fullName,
+    avatar_url: user.avatarUrl,
     timezone: user.timezone,
     locale: user.locale,
-    subscriptionTier: user.subscriptionTier,
-    subscriptionStatus: user.subscriptionStatus,
-    createdAt: user.createdAt.toISOString(),
+    subscription_tier: user.subscriptionTier,
+    subscription_status: user.subscriptionStatus,
+    created_at: user.createdAt.toISOString(),
+    updated_at: user.updatedAt.toISOString(),
+    phone_number: user.phoneNumber,
+    phone_verified: user.phoneVerified,
+    trial_ends_at: user.trialEndsAt?.toISOString() ?? null,
   };
 }
 
